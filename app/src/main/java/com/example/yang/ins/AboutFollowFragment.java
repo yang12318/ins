@@ -110,7 +110,7 @@ public static AboutFollowFragment newInstance(String mtd_id) {
                 easyRefreshLayout.loadMoreComplete(new EasyRefreshLayout.Event() {
                     @Override
                     public void complete() {
-                        adapter.setNewData(mInfoList);
+//                        adapter.setNewData(mInfoList);
                         easyRefreshLayout.refreshComplete();
                     }
                 }, 500);

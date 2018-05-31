@@ -372,7 +372,11 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
 
         @Override
         protected void convert(BaseViewHolder helper, Dynamic item) {
-            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));
+            if (mContext == null) {
+                return;
+            }
+            else {
+            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
             helper.setText(R.id.tv_username, item.getUsername());
             helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
             if (TextUtils.isEmpty(item.getIntroduction())) {

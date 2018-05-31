@@ -122,6 +122,7 @@ public class AlbumFragment extends Fragment{
                         Dynamic dynamic = new Dynamic();
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         dynamic.setId(jsonObject.getInt("post_id"));
+                        dynamic.setUserId(jsonObject.getInt("user_id"));
                         dynamic.setIs_multi(jsonObject.getBoolean("is_many"));
                         dynamic.setPhoto0("http://ktchen.cn"+jsonObject.getString("photo_0"));
                         mDynamicList.add(dynamic);
@@ -150,7 +151,9 @@ public class AlbumFragment extends Fragment{
         public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
             Intent intent = new Intent(getActivity(), DetailActivity.class);
             int id = mDynamicList.get(position).getId();
+            int userid = mDynamicList.get(position).getUserId();
             intent.putExtra("id", id);
+            intent.putExtra("user_id", userid);
             Log.e("AlbumFragment", "ItemChildClick");
             startActivity(intent);
         }

@@ -84,7 +84,7 @@ public class AboutMeFragment extends Fragment{
         //adapter = new Info1Adapter(R.layout.item_about_follow, mInfoList);
         initView();
         initData();
-//        madapter.setNewData(mInfoList);
+        madapter.setNewData(mInfoList);
         initAdapter();
         madapter.bindToRecyclerView(recyclerView);
         madapter.setEmptyView(R.layout.empty_about_me);

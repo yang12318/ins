@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:maxLines="5"
+            android:maxLines="6"
             android:textCursorDrawable="@drawable/edit_cursor2"
             android:background="@drawable/editshape2"
             android:scrollbars="vertical"

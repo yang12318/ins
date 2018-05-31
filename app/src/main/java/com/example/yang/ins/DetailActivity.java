@@ -3,14 +3,18 @@ package com.example.yang.ins;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -58,7 +62,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
         postId = intent.getIntExtra("id", 0);
-        userId = intent.getIntExtra("userId", 0);
+        userId = intent.getIntExtra("user_id", 0);
         ci_head = (CircleImageView) findViewById(R.id.ci_head);
         ib_back = (ImageButton) findViewById(R.id.ib_detail_back);
         ib_menu = (ImageButton) findViewById(R.id.ib_menu);
@@ -105,14 +109,14 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
             @Override
             public void onClick(View view) {
                 if (userId != 0) {
-//                    Intent intent = new Intent(DetailActivity.this, UserActivity.class);
-//                    intent.putExtra("userId", userId);
-//                    startActivity(intent);
+                    Intent intent = new Intent(DetailActivity.this, UserActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
                 }
                 else {
-//                    Intent intent = new Intent(DetailActivity.this, MeFragment.class);
-////                    intent.putExtra("userId", userId);
-//                    startActivity(intent);
+                    Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+//                    intent.putExtra("userId", userId);
+                    startActivity(intent);
                 }
             }
         });
@@ -133,13 +137,13 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                 map.put("pk", pk);
                 if(!flag){
                     //未点赞
-                    ib_like.setImageResource(R.drawable.like2);
+                    setLikeStyle(true);
                     HelloHttp.sendPostRequest("api/post/dianzan", map, new okhttp3.Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Log.e("Detail", "FAILURE");
                             Looper.prepare();
-                            ib_like.setImageResource(R.drawable.like1);
+                            setLikeStyle(false);
                             Toast.makeText(DetailActivity.this, "服务器未响应", Toast.LENGTH_SHORT).show();
                             Looper.loop();
                         }
@@ -152,25 +156,25 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             try {
                                 result = new JSONObject(responseData).getString("status");
                             } catch (JSONException e) {
-                                ib_like.setImageResource(R.drawable.like1);
+                                setLikeStyle(false);
                                 e.printStackTrace();
                             }
                             if(result.equals("Success")) {
                                 Looper.prepare();
                                 Toast.makeText(DetailActivity.this,"点赞成功", Toast.LENGTH_SHORT).show();
                                 dynamic.setIs_like(true);
-//                                ib_like.setImageResource(R.drawable.like2);
+                                setLikeStyle(true);
                                 Looper.loop();
                             }
                             else if(result.equals("Failure")) {
                                 Looper.prepare();
-                                ib_like.setImageResource(R.drawable.like1);
+                                setLikeStyle(false);
                                 Toast.makeText(DetailActivity.this,"记录已存在", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("UnknownError")){
                                 Looper.prepare();
-                                ib_like.setImageResource(R.drawable.like1);
+                                setLikeStyle(false);
                                 Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
@@ -179,12 +183,13 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                 }
                 else {
                     //已点赞
-                    ib_like.setImageResource(R.drawable.like1);
+                    setLikeStyle(false);
                     HelloHttp.sendDeleteRequest("api/post/dianzan", map, new okhttp3.Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Log.e("Detail", "FAILURE");
                             Looper.prepare();
+                            setLikeStyle(true);
                             Toast.makeText(DetailActivity.this, "服务器未响应", Toast.LENGTH_SHORT).show();
                             Looper.loop();
                         }
@@ -197,25 +202,25 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             try {
                                 result = new JSONObject(responseData).getString("status");
                             } catch (JSONException e) {
-                                ib_like.setImageResource(R.drawable.like2);
+                                setLikeStyle(true);
                                 e.printStackTrace();
                             }
                             if(result.equals("Success")) {
                                 Looper.prepare();
                                 dynamic.setIs_like(false);
-//                                ib_like.setImageResource(R.drawable.like1);
+                                setLikeStyle(false);
                                 Toast.makeText(DetailActivity.this,"取消点赞成功", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("Failure")) {
                                 Looper.prepare();
-                                ib_like.setImageResource(R.drawable.like2);
+                                setLikeStyle(true);
                                 Toast.makeText(DetailActivity.this,"记录不存在", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("UnknownError")){
                                 Looper.prepare();
-                                ib_like.setImageResource(R.drawable.like2);
+                                setLikeStyle(true);
                                 Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
@@ -229,16 +234,19 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
             public void onClick(View view) {
                 int pk = dynamic.getId();
                 boolean flag = dynamic.isIs_collect();
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", pk);
+                map.put("post_id", pk);
                 if(!flag){
                     //未收藏
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("post_id", pk);
+                    setCollectStyle(true);
                     HelloHttp.sendPostRequest("api/post/like", map, new okhttp3.Callback() {
 
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Log.e("Detail", "FAILURE");
                             Looper.prepare();
+                            setCollectStyle(false);
                             Toast.makeText(DetailActivity.this, "服务器未响应", Toast.LENGTH_SHORT).show();
                             Looper.loop();
                         }
@@ -251,36 +259,42 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             try {
                                 result = new JSONObject(responseData).getString("status");
                             } catch (JSONException e) {
+                                setCollectStyle(false);
                                 e.printStackTrace();
                             }
-                            if(result.equals("Success")) {
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"收藏成功", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-                            else if(result.equals("Failure")) {
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"记录已存在", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-                            else if(result.equals("UnknownError")){
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
+                            if (result != null) {
+                                if(result.equals("Success")) {
+                                    Looper.prepare();
+                                    setCollectStyle(true);
+                                    dynamic.setIs_collect(true);
+                                    Toast.makeText(DetailActivity.this,"收藏成功", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                                else if(result.equals("Failure")) {
+                                    Looper.prepare();
+                                    setCollectStyle(false);
+                                    Toast.makeText(DetailActivity.this,"记录已存在", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                                else if(result.equals("UnknownError")){
+                                    Looper.prepare();
+                                    setCollectStyle(false);
+                                    Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
                             }
                         }
                     });
                 }
                 else {
                     //已收藏
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", pk);
+                    setCollectStyle(false);
                     HelloHttp.sendDeleteRequest("api/post/like", map, new okhttp3.Callback() {
-
                         @Override
                         public void onFailure(Call call, IOException e) {
                             Log.e("Detail", "FAILURE");
                             Looper.prepare();
+                            setCollectStyle(true);
                             Toast.makeText(DetailActivity.this, "服务器未响应", Toast.LENGTH_SHORT).show();
                             Looper.loop();
                         }
@@ -293,22 +307,29 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             try {
                                 result = new JSONObject(responseData).getString("status");
                             } catch (JSONException e) {
+                                setCollectStyle(true);
                                 e.printStackTrace();
                             }
-                            if(result.equals("Success")) {
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"取消收藏成功", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-                            else if(result.equals("Failure")) {
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"记录不存在", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-                            else if(result.equals("UnknownError")){
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
+                            if (result != null) {
+                                if(result.equals("Success")) {
+                                    Looper.prepare();
+                                    setCollectStyle(false);
+                                    dynamic.setIs_collect(false);
+                                    Toast.makeText(DetailActivity.this,"取消收藏成功", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+//                                else if(result.equals("Failure")) {
+//                                    Looper.prepare();
+//                                    setCollectStyle(true);
+//                                    Toast.makeText(DetailActivity.this,"记录不存在", Toast.LENGTH_SHORT).show();
+//                                    Looper.loop();
+//                                }
+                                else if(result.equals("UnknownError")){
+                                    Looper.prepare();
+                                    setCollectStyle(true);
+                                    Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
                             }
                         }
                     });
@@ -480,6 +501,24 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                 Log.d("DetailActivity", Boolean.toString(flagLike));
                 ib_like.setImageResource(flagLike ? R.drawable.like2 : R.drawable.like1);
                 ib_collect.setImageResource(flagCollect ? R.drawable.collect2 : R.drawable.collect1);
+            }
+        });
+    }
+    private void setLikeStyle(final boolean flag) {
+        runOnUiThread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void run() {
+                ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
+            }
+        });
+    }
+    private void setCollectStyle(final boolean flag) {
+        runOnUiThread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void run() {
+                ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
             }
         });
     }
