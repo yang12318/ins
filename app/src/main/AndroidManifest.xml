@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.yang.ins">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ins"
+        android:label="Instagram"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:label">
+        <activity android:name=".MainActivity"  android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:name=".LoginActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".Register2Activity" />
+        <activity android:name=".ForgetActivity" />
+        <activity android:name=".Forget2Activity"/>
+        <activity android:name=".ChangeCodeActivity" />
+        <activity android:name=".ReviseActivity" />
+        <activity android:name=".ConcernActivity" />
+        <activity android:name=".FollowActivity" />
+        <activity android:name=".UserActivity" />
+        <activity android:name=".CommentActivity" />
+        <activity android:name=".LikeActivity" />
+        <activity android:name=".DetailActivity" />
+        <activity android:name=".CollectActivity"></activity>
+    </application>
+
+</manifest>
