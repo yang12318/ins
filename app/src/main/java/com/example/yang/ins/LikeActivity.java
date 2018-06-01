@@ -119,6 +119,7 @@ public class LikeActivity extends AppCompatActivity {
                         Dynamic dynamic = new Dynamic();
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         dynamic.setId(jsonObject.getInt("post_id"));
+                        dynamic.setPost_userId(jsonObject.getInt("post_user_id"));
                         dynamic.setIs_multi(jsonObject.getBoolean("is_many"));
                         dynamic.setPhoto0("http://ktchen.cn"+jsonObject.getString("photo_0"));
                         mDynamicList.add(dynamic);
@@ -147,7 +148,7 @@ public class LikeActivity extends AppCompatActivity {
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(LikeActivity.this, DetailActivity.class);
                 int id = mDynamicList.get(position).getId();
-                int user_id = mDynamicList.get(position).getUserId();
+                int user_id = mDynamicList.get(position).getPost_userId();
                 intent.putExtra("user_id", user_id);
                 intent.putExtra("id", id);
                 startActivity(intent);

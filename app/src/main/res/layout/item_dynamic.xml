@@ -59,19 +59,6 @@
                 android:tint="#696969" />
         </RelativeLayout>
 
-        <!--<ImageView-->
-            <!--android:layout_width="fill_parent"-->
-            <!--android:layout_height="250dp"-->
-            <!--android:scaleType="centerCrop" />-->
-        <!--com.fuyin.views.NineGridTestLayout
-            android:id="@+id/nineTestlayout"
-            android:layout_below="@+id/rl_dynamic"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_marginRight="10dp"
-            android:layout_height="wrap_content">
-        </com.fuyin.views.NineGridTestLayout-->
         <cn.bingoogolapple.photopicker.widget.BGANinePhotoLayout
             android:id="@+id/npl_item_moment_photos"
             xmlns:app="http://schemas.android.com/apk/res-auto"

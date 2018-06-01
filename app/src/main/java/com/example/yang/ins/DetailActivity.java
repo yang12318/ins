@@ -48,7 +48,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class DetailActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks, BGANinePhotoLayout.Delegate{
     private static final int PRC_PHOTO_PREVIEW = 1;
-    private int postId = 0, userId = 0;
+    private int postId = 0, userId = -10;
     private ImageButton ib_back, ib_menu, ib_like, ib_collect, ib_comment;
     private CircleImageView ci_head;
     private TextView tv_username, tv_introduction, tv_review, tv_time;
@@ -62,7 +62,9 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
         postId = intent.getIntExtra("id", 0);
-        userId = intent.getIntExtra("user_id", 0);
+        userId = intent.getIntExtra("user_id", -10);
+        Log.d("DetailActivity", "postid="+Integer.toString(postId));
+        Log.d("DetailActivity", "userid="+Integer.toString(userId));
         ci_head = (CircleImageView) findViewById(R.id.ci_head);
         ib_back = (ImageButton) findViewById(R.id.ib_detail_back);
         ib_menu = (ImageButton) findViewById(R.id.ib_menu);
@@ -108,14 +110,32 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         ci_head.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (userId != 0) {
-                    Intent intent = new Intent(DetailActivity.this, UserActivity.class);
-                    intent.putExtra("userId", userId);
+                int myId = -9;
+                if(userId == -10) {
+                    Toast.makeText(DetailActivity.this, "Intent错误", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                MainApplication app = MainApplication.getInstance();
+                Map<String, Integer> mapParam = app.mInfoMap;
+                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                    if(item_map.getKey().equals("id")) {
+                        myId = item_map.getValue();
+                    }
+                }
+                if(myId == -9) {
+                    Toast.makeText(DetailActivity.this, "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(myId == userId) {
+                    //这个人是我自己
+                    Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+                    intent.putExtra("me_id",userId );
                     startActivity(intent);
                 }
                 else {
-                    Intent intent = new Intent(DetailActivity.this, MainActivity.class);
-//                    intent.putExtra("userId", userId);
+                    //这个人不是我
+                    Intent intent = new Intent(DetailActivity.this, UserActivity.class);
+                    intent.putExtra("userId", userId);
                     startActivity(intent);
                 }
             }
@@ -123,9 +143,34 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         tv_username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DetailActivity.this, UserActivity.class);
-                intent.putExtra("userId", userId);
-                startActivity(intent);
+                int myId = -9;
+                if(userId == -10) {
+                    Toast.makeText(DetailActivity.this, "Intent错误", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                MainApplication app = MainApplication.getInstance();
+                Map<String, Integer> mapParam = app.mInfoMap;
+                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                    if(item_map.getKey().equals("id")) {
+                        myId = item_map.getValue();
+                    }
+                }
+                if(myId == -9) {
+                    Toast.makeText(DetailActivity.this, "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(myId == userId) {
+                    //这个人是我自己
+                    Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+                    intent.putExtra("me_id",userId );
+                    startActivity(intent);
+                }
+                else {
+                    //这个人不是我
+                    Intent intent = new Intent(DetailActivity.this, UserActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
+                }
             }
         });
         ib_like.setOnClickListener(new View.OnClickListener() {

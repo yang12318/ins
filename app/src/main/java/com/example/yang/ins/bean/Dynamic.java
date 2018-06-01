@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class Dynamic {
     private int id;
     private int userId;
+    private int post_userId;
     private String introduction;
     private String username;
     private String pub_time;
@@ -30,6 +31,14 @@ public class Dynamic {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getPost_userId() {
+        return post_userId;
+    }
+
+    public void setPost_userId(int post_userId) {
+        this.post_userId = post_userId;
     }
 
     public int getUserId() {

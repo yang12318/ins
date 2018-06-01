@@ -83,7 +83,7 @@ public class UserActivity extends AppCompatActivity {
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.selector_album));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.selector_dynamic));
         tabLayout.setSelectedTabIndicatorColor(Color.BLACK);
-        tabLayout.setSelectedTabIndicatorHeight(1);
+        tabLayout.setSelectedTabIndicatorHeight(0);
         Intent intent = getIntent();
         userId = intent.getIntExtra("userId", 0);
         Log.d("UserActivity", Integer.toString(userId));

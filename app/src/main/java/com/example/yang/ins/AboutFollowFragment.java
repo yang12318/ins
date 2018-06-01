@@ -145,6 +145,7 @@ public static AboutFollowFragment newInstance(String mtd_id) {
                         info1.setPostId(jsonObject.getInt("post_id"));
                         info1.setSrc(jsonObject.getString("profile_picture"));
                         info1.setTime(jsonObject.getString("time"));
+                        info1.setPost_userId(jsonObject.getInt("post_user_id"));
                         info1.setPhoto_0(jsonObject.getString("photo_0"));
                         info1.setUserName(jsonObject.getString("username"));
                         mInfoList.add(info1);
@@ -179,6 +180,7 @@ public static AboutFollowFragment newInstance(String mtd_id) {
                 else if(view.getId() == R.id.about_follow_picture) {
                     Intent intent = new Intent(getActivity(), DetailActivity.class);
                     intent.putExtra("id", mInfoList.get(position).getPostId());
+                    intent.putExtra("user_id",mInfoList.get(position).getPost_userId());
                     startActivity(intent);
                 }
             }

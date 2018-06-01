@@ -162,6 +162,7 @@ public class AboutMeFragment extends Fragment{
                                 info1.setUserId(jsonObject.getInt("user_id"));
                                 info1.setPostId(jsonObject.getInt("post_id"));
                                 info1.setPhoto_0(jsonObject.getString("photo_0"));
+                                info1.setPost_userId(jsonObject.getInt("post_user_id"));
                                 info1.setSrc(jsonObject.getString("profile_picture"));
                                 info1.setUserName(jsonObject.getString("username"));
                                 mInfoList.add(info1);
@@ -173,6 +174,7 @@ public class AboutMeFragment extends Fragment{
                                 info1.setSrc(jsonObject.getString("profile_picture"));
                                 info1.setContent(jsonObject.getString("content"));
                                 info1.setPhoto_0(jsonObject.getString("photo_0"));
+                                info1.setPost_userId(jsonObject.getInt("post_user_id"));
                                 info1.setUserName(jsonObject.getString("username"));
                                 mInfoList.add(info1);
                                 break;
@@ -208,6 +210,7 @@ public class AboutMeFragment extends Fragment{
                 else if(view.getId() == R.id.about_me_picture || view.getId() == R.id.iv_me_picture || view.getId() == R.id.tv_me_comment) {
                     Intent intent = new Intent(getActivity(), DetailActivity.class);
                     intent.putExtra("id", mInfoList.get(position).getPostId());
+                    intent.putExtra("user_id",mInfoList.get(position).getPost_userId());
                     startActivity(intent);
                 }
                 else if(view.getId() == R.id.btn_follow){

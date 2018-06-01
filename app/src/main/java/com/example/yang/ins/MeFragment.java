@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.Call;
@@ -147,6 +148,7 @@ public class MeFragment extends Fragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -155,8 +157,8 @@ public class MeFragment extends Fragment {
         Log.e("Me", "OnCreateView");
         view = inflater.inflate(R.layout.fragment_me, container, false);
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.tb_me);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         toolbar.setTitle("");
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(toolbar);
         //Bundle bundle = getArguments();
         tv_concern = (TextView) view.findViewById(R.id.me_concern);
         tv_follow = (TextView) view.findViewById(R.id.me_follow);

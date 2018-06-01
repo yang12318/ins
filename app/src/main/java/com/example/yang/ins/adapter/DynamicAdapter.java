@@ -2,8 +2,6 @@ package com.example.yang.ins.adapter;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -17,7 +15,7 @@ import java.util.List;
 import cn.bingoogolapple.photopicker.widget.BGANinePhotoLayout;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/*public class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
+public class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
 
     public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
         super(layoutResId, data);
@@ -25,9 +23,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
     @Override
     protected void convert(BaseViewHolder helper, Dynamic item) {
-        Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));
+        if (mContext == null) {
+            return;
+        }
+        else {
+            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
         helper.setText(R.id.tv_username, item.getUsername());
-        helper.setText(R.id.tv_like, item.getLikes_num()+"次赞");
+        helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
         if (TextUtils.isEmpty(item.getIntroduction())) {
             helper.setGone(R.id.tv_detail, false);
         }
@@ -41,10 +43,23 @@ import de.hdodenhof.circleimageview.CircleImageView;
         helper.addOnClickListener(R.id.ib_comment);
         helper.addOnClickListener(R.id.ib_collect);
         helper.addOnClickListener(R.id.tv_comment);
+        helper.addOnClickListener(R.id.ci_head);
+        helper.addOnClickListener(R.id.tv_username);
         helper.addOnClickListener(R.id.ib_menu);
+        if(item.isIs_like()) {
+            helper.setImageResource(R.id.ib_like, R.drawable.like2);
+        }
+        else {
+            helper.setImageResource(R.id.ib_like, R.drawable.like1);
+        }
+        if(item.isIs_collect()) {
+            helper.setImageResource(R.id.ib_collect, R.drawable.collect2);
+        }
+        else {
+            helper.setImageResource(R.id.ib_collect, R.drawable.collect1);
+        }
         BGANinePhotoLayout ninePhotoLayout = helper.getView(R.id.npl_item_moment_photos);
-        ninePhotoLayout.setDelegate(HomeFragment.this);
+//        ninePhotoLayout.setDelegate(HomeFragment.this);
         ninePhotoLayout.setData(item.getThumbnails());
     }
 }
-*/

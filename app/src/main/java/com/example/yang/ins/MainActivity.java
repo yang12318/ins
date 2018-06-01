@@ -70,6 +70,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
                 .initialise(); //initialise 一定要放在 所有设置的最后一项
 
         setDefaultFragment();//设置默认导航栏
+        int id = -10;
+        try{
+            Intent intent = getIntent();
+            id = intent.getIntExtra("me_id", -10);
+            if(id != -10) {
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction transaction = fm.beginTransaction();
+                mMeFragment = MeFragment.newInstance("个人");
+                bottomNavigationBar.selectTab(4);
+                transaction.replace(R.id.tb, mMeFragment);
+                transaction.commit();
+            }
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

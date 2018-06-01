@@ -5,6 +5,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
 public class Info1 implements MultiItemEntity {
     private int postId;
     private int userId;
+    private int post_userId;
     private int ms_type;
     private String content;
     private String userName;
@@ -22,6 +23,14 @@ public class Info1 implements MultiItemEntity {
 
     public void setPostId(int postId) {
         this.postId = postId;
+    }
+
+    public int getPost_userId() {
+        return post_userId;
+    }
+
+    public void setPost_userId(int post_userId) {
+        this.post_userId = post_userId;
     }
 
     public int getMs_type() {
