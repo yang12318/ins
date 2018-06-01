@@ -145,7 +145,9 @@ public class DynamicFragment extends Fragment{
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 int id = mDynamicList.get(position).getId();
+                int userid = mDynamicList.get(position).getUserId();
                 intent.putExtra("id", id);
+                intent.putExtra("user_id", userid);
                 startActivity(intent);
             }
         });

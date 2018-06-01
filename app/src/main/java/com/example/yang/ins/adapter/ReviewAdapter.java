@@ -23,6 +23,8 @@ public class ReviewAdapter extends BaseQuickAdapter<Review, BaseViewHolder> {
         helper.setText(R.id.comment_time, item.getPub_time());
         helper.setText(R.id.comment_username, item.getCommenter());
         Glide.with(mContext).load(item.getSrc()).into((CircleImageView) helper.getView(R.id.comment_head));
-        helper.addOnClickListener(R.id.comment_rl);
+        helper.addOnClickListener(R.id.cv_comment);
+        helper.addOnClickListener(R.id.comment_head);
+        helper.addOnClickListener(R.id.comment_username);
     }
 }

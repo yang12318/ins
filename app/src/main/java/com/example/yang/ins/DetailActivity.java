@@ -232,13 +232,12 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         ib_collect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int pk = dynamic.getId();
                 boolean flag = dynamic.isIs_collect();
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", pk);
-                map.put("post_id", pk);
                 if(!flag){
                     //未收藏
+                    int pk = dynamic.getId();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("post_id", pk);
                     setCollectStyle(true);
                     HelloHttp.sendPostRequest("api/post/like", map, new okhttp3.Callback() {
 
@@ -288,6 +287,9 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                 }
                 else {
                     //已收藏
+                    int pk = dynamic.getId();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", pk);
                     setCollectStyle(false);
                     HelloHttp.sendDeleteRequest("api/post/like", map, new okhttp3.Callback() {
                         @Override

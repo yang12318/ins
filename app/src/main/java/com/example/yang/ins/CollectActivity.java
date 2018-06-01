@@ -136,19 +136,15 @@ public class CollectActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     private void initAdapter() {
         //firstAdapter.openLoadAnimation();
-        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                Intent intent = new Intent(CollectActivity.this, DetailActivity.class);
-                int id = mDynamicList.get(position).getId();
-                intent.putExtra("id", id);
-                startActivity(intent);
-            }
-        });
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-
+                Intent intent = new Intent(CollectActivity.this, DetailActivity.class);
+                int id = mDynamicList.get(position).getId();
+                int user_id = mDynamicList.get(position).getUserId();
+                intent.putExtra("user_id", user_id);
+                intent.putExtra("id", id);
+                startActivity(intent);
             }
         });
         recyclerView.setAdapter(adapter);

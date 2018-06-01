@@ -16,10 +16,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ajguan.library.EasyRefreshLayout;
@@ -102,9 +101,17 @@ public class CommentActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         if(result.equals("Success")) {
-                            Looper.prepare();
-                            Toast.makeText(CommentActivity.this,"发表成功", Toast.LENGTH_SHORT).show();
-                            Looper.loop();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(CommentActivity.this,"发表成功", Toast.LENGTH_SHORT).show();
+                                    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    inputMethodManager.hideSoftInputFromWindow(CommentActivity.this.getCurrentFocus().getWindowToken()
+                                            ,InputMethodManager.HIDE_NOT_ALWAYS);
+                                    initData();
+                                    initAdapter();
+                                }
+                            });
                         }
                         else if(result.equals("UnknownError")){
                             Looper.prepare();
@@ -187,7 +194,7 @@ public class CommentActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         Review myReview = new Review();
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        myReview.setId(jsonObject.getInt("post_id"));
+                        myReview.setId(jsonObject.getInt("comment_id"));
                         myReview.setCommenter(jsonObject.getString("username"));
                         myReview.setCommenterId(jsonObject.getInt("user_id"));
                         myReview.setPub_time(jsonObject.getString("time"));
@@ -213,82 +220,98 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     private void initAdapter() {
+        adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
+                MainApplication application = MainApplication.getInstance();
+                Map<String, Integer> mapParam = application.mInfoMap;
+                int id = -10;
+                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                    if(item_map.getKey().equals("id"))
+                        id = item_map.getValue();
+                }
+                if(id == -10) {
+                    Toast.makeText(CommentActivity.this, "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                else if(id == list.get(position).getCommenterId()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
+                    String[] strarr = {"复制评论到剪贴板","删除评论","取消"};
+                    builder.setItems(strarr, new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface arg0, int arg1)
+                        {
+                            if (arg1 == 0) {
+                                String s = list.get(position).getContent();
+                                s = s + "\n著作权归作者所有。\n" +
+                                        "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
+                                        "作者：" +
+                                        list.get(position).getCommenter() +
+                                        "\n" +
+                                        "来源：Instagram";
+                                //获取剪贴板管理器：
+                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                // 创建普通字符型ClipData
+                                ClipData mClipData = ClipData.newPlainText("Label", s);
+                                // 将ClipData内容放到系统剪贴板里。
+                                cm.setPrimaryClip(mClipData);
+                                Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
+                            }else if(arg1 == 1){
+                                int temp = list.get(position).getId();
+                                deleteComment(temp);
+                            }
+                            else if(arg1 == 2) {
+                                return;
+                            }
+                        }
+                    });
+                    builder.show();
+                }
+                else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
+                    String[] strarr = {"复制评论到剪贴板","取消"};
+                    builder.setItems(strarr, new DialogInterface.OnClickListener()
+                    {
+                        public void onClick(DialogInterface arg0, int arg1)
+                        {
+                            if (arg1 == 0) {
+                                String s = list.get(position).getContent();
+                                s = s + "\n著作权归作者所有。\n" +
+                                        "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
+                                        "作者：" +
+                                        list.get(position).getCommenter() +
+                                        "\n" +
+                                        "来源：Instagram";
+                                //获取剪贴板管理器：
+                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                // 创建普通字符型ClipData
+                                ClipData mClipData = ClipData.newPlainText("Label", s);
+                                // 将ClipData内容放到系统剪贴板里。
+                                if (cm != null) {
+                                    cm.setPrimaryClip(mClipData);
+                                    Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
+                                }
+                                else {
+                                    Toast.makeText(CommentActivity.this, "内容为空", Toast.LENGTH_SHORT ).show();
+                                }
+                            }else if(arg1 == 1){
+                                return;
+                            }
+                        }
+                    });
+                    builder.show();
+                }
+                return true;
+            }
+        });
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
-            public void onItemChildClick(BaseQuickAdapter adapter, View view, final int position) {
-//                MainApplication application = MainApplication.getInstance();
-//                Map<String, Integer> mapParam = application.mInfoMap;
-//                int id = -10;
-//                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-//                    if(item_map.getKey().equals("id"))
-//                        id = item_map.getValue();
-//                }
-//                if(id == -10) {
-//                    Toast.makeText(CommentActivity.this, "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                else if(id == list.get(position).getCommenterId()) {
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
-//                    String[] strarr = {"复制评论到剪贴板","删除评论","取消"};
-//                    builder.setItems(strarr, new DialogInterface.OnClickListener()
-//                    {
-//                        public void onClick(DialogInterface arg0, int arg1)
-//                        {
-//                            if (arg1 == 0) {
-//                                String s = list.get(position).getContent();
-//                                s = s + "\n著作权归作者所有。\n" +
-//                                        "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
-//                                        "作者：" +
-//                                        list.get(position).getCommenter() +
-//                                        "\n" +
-//                                        "来源：Instagram";
-//                                //获取剪贴板管理器：
-//                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//                                // 创建普通字符型ClipData
-//                                ClipData mClipData = ClipData.newPlainText("Label", s);
-//                                // 将ClipData内容放到系统剪贴板里。
-//                                cm.setPrimaryClip(mClipData);
-//                                Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
-//                            }else if(arg1 == 1){
-//                                int temp = list.get(position).getId();
-//                                deleteComment(temp);
-//                            }
-//                            else if(arg1 == 2) {
-//                                return;
-//                            }
-//                        }
-//                    });
-//                    builder.show();
-//                }
-//                else {
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
-//                    String[] strarr = {"复制评论到剪贴板","取消"};
-//                    builder.setItems(strarr, new DialogInterface.OnClickListener()
-//                    {
-//                        public void onClick(DialogInterface arg0, int arg1)
-//                        {
-//                            if (arg1 == 0) {
-//                                String s = list.get(position).getContent();
-//                                s = s + "\n著作权归作者所有。\n" +
-//                                        "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
-//                                        "作者：" +
-//                                        list.get(position).getCommenter() +
-//                                        "\n" +
-//                                        "来源：Instagram";
-//                                //获取剪贴板管理器：
-//                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//                                // 创建普通字符型ClipData
-//                                ClipData mClipData = ClipData.newPlainText("Label", s);
-//                                // 将ClipData内容放到系统剪贴板里。
-//                                cm.setPrimaryClip(mClipData);
-//                                Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
-//                            }else if(arg1 == 1){
-//                                return;
-//                            }
-//                        }
-//                    });
-//                    builder.show();
-//                }
+            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                if(view.getId() == R.id.comment_head || view.getId() == R.id.comment_username) {
+                    Intent intent = new Intent(CommentActivity.this, UserActivity.class);
+                    intent.putExtra("userId", list.get(position).getCommenterId());
+                    startActivity(intent);
+                }
             }
         });
         recyclerView.setAdapter(adapter);
@@ -327,15 +350,18 @@ public class CommentActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if(result.equals("Success")) {
-                    Looper.prepare();
-                    Toast.makeText(CommentActivity.this,"删除成功", Toast.LENGTH_SHORT).show();
-                    //emmmm想不明白该怎么不刷新只把它删了，我要是把这个item remove了，那是不是说
-                    //我在按完删除键以后在响应回来之前刷新了页面，这个时候有新的评论加进来了
-                    //换句话说也就是list的position发生了变化，这个时候你这个响应回来了，就删除错了
-                    //所以在想到更好的解决方案之前，就先整页刷新吧
-                    initData();
-                    initAdapter();
-                    Looper.loop();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(CommentActivity.this,"删除成功", Toast.LENGTH_SHORT).show();
+                            //emmmm想不明白该怎么不刷新只把它删了，我要是把这个item remove了，那是不是说
+                            //我在按完删除键以后在响应回来之前刷新了页面，这个时候有新的评论加进来了
+                            //换句话说也就是list的position发生了变化，这个时候你这个响应回来了，就删除错了
+                            //所以在想到更好的解决方案之前，就先整页刷新吧
+                            initData();
+                            initAdapter();
+                        }
+                    });
                 }
                 else if(result.equals("Failure")) {
                     Looper.prepare();

@@ -166,8 +166,8 @@ public class UserActivity extends AppCompatActivity {
                 Log.d("UserActivity", responseData);
                 try {
                     JSONObject jsonObject1 = new JSONObject(responseData);
-                    posts = jsonObject1.getInt("post_num");
                     JSONObject jsonObject = jsonObject1.getJSONObject("result");
+                    posts = jsonObject1.getInt("post_num");
                     username = jsonObject.getString("username");
                     nickname = jsonObject.getString("nickname");
                     gender = jsonObject.getInt("gender");

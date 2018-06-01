@@ -49,7 +49,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class HomeFragment extends Fragment implements EasyPermissions.PermissionCallbacks, BGANinePhotoLayout.Delegate{
 
     private int last_post_id = 0;
-    private List<Dynamic> list = new ArrayList<>();
+    private List<Dynamic> list;
     private RecyclerView recyclerView;
     private DynamicAdapter adapter;
     private EasyRefreshLayout easyRefreshLayout;
@@ -94,7 +94,6 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_like);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         easyRefreshLayout = (EasyRefreshLayout) view.findViewById(R.id.easylayout);
-        easyRefreshLayout.setLoadMoreModel(LoadModel.NONE);
         easyRefreshLayout.addEasyEvent(new EasyRefreshLayout.EasyEvent() {
             @Override
             public void onLoadMore() {
@@ -104,7 +103,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                 HelloHttp.sendGetRequest("api/dynamic", map, new okhttp3.Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        Log.e("FollowActivity", "FAILURE");
+                        Log.e("HomeFragment", "FAILURE");
                         Looper.prepare();
                         Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
                         Looper.loop();
@@ -118,9 +117,11 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             JSONObject jsonObject1 = new JSONObject(responseData);
                             String result = jsonObject1.getString("status");
                             if(result.equals("Success")) {
-                                JSONArray jsonArray = jsonObject1.getJSONArray("result");
-                                for(int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
+                                JSONArray jsonArray2 = jsonObject1.getJSONArray("photoList");
+                                final int length1 = jsonArray1.length();
+                                for(int i = 0; i < length1; i++) {
+                                    JSONObject jsonObject = jsonArray1.getJSONObject(i);
                                     final Dynamic dynamic = new Dynamic();
                                     dynamic.setUsername(jsonObject.getString("username"));
                                     dynamic.setIntroduction(jsonObject.getString("introduction"));
@@ -130,53 +131,28 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                                     dynamic.setCom_num(jsonObject.getInt("com_num"));
                                     dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
                                     dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
-                                    int postId = jsonObject.getInt("post_id");
-                                    dynamic.setId(postId);
+                                    dynamic.setId(jsonObject.getInt("post_id"));
                                     dynamic.setUserId(jsonObject.getInt("user_id"));
-                                    Map<String, Object> map2 = new HashMap<>();
-                                    map2.put("postid", postId);
-                                    HelloHttp.sendGetRequest("api/photoList", map2, new okhttp3.Callback() {
-                                        @Override
-                                        public void onFailure(Call call, IOException e) {
-                                            Log.e("DetailActivity", "FAILURE");
-                                            Looper.prepare();
-                                            Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
-                                            Looper.loop();
-                                        }
-
-                                        @Override
-                                        public void onResponse(Call call, Response response) throws IOException {
-                                            String responseData = response.body().string();
-                                            Log.d("DetailActivity", responseData);
-                                            try {
-                                                JSONObject jsonObject1 = new JSONObject(responseData);
-                                                JSONArray jsonArray = jsonObject1.getJSONArray("result");
-                                                ArrayList<String> arrayList = new ArrayList<>();
-                                                ArrayList<String> thumbList = new ArrayList<>();
-                                                for (int i = 0; i < jsonArray.length(); i++) {
-                                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                                    arrayList.add("http://ktchen.cn"+jsonObject.getString("photo"));
-                                                    thumbList.add("http://ktchen.cn"+jsonObject.getString("photo_thumbnail"));
-                                                }
-                                                dynamic.setPhotos(arrayList);
-                                                dynamic.setThumbnails(thumbList);
-                                                mHandler.sendEmptyMessageDelayed(1, 0);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                                String result = null;
-                                                try {
-                                                    result = new JSONObject(responseData).getString("status");
-                                                    Looper.prepare();
-                                                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-                                                    Looper.loop();
-                                                } catch (JSONException e1) {
-                                                    e1.printStackTrace();
-                                                }
-                                            }
-                                        }
-                                    });
+                                    JSONArray jsonArray = jsonArray2.getJSONArray(i);
+                                    ArrayList<String> arrayList = new ArrayList<>();
+                                    ArrayList<String> thumbList = new ArrayList<>();
+                                    final int length2 = jsonArray.length();
+                                    for (int j = 0; j < length2; j++) {
+                                        JSONObject jsonObject2 = jsonArray.getJSONObject(j);
+                                        arrayList.add("http://ktchen.cn" + jsonObject2.getString("photo"));
+                                        thumbList.add("http://ktchen.cn" + jsonObject2.getString("photo_thumbnail"));
+                                    }
+                                    dynamic.setPhotos(arrayList);
+                                    dynamic.setThumbnails(thumbList);
+                                    list.add(dynamic);
+                                    mHandler.sendEmptyMessageDelayed(1, 0);
                                 }
-                                last_post_id = list.get(list.size()).getId();
+                                last_post_id = list.get(list.size()-1).getId();
+                            }
+                            else if(result.equals("null")){
+                                Looper.prepare();
+                                Toast.makeText(getContext(), "没有更多数据了", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
                             }
                             else {
                                 Looper.prepare();
@@ -188,6 +164,12 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                         }
                     }
                 });
+                easyRefreshLayout.loadMoreComplete(new EasyRefreshLayout.Event() {
+                    @Override
+                    public void complete() {
+                        adapter.notifyDataSetChanged();
+                    }
+                }, 2000);
             }
 
             @Override
@@ -207,12 +189,13 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     }
 
     private void initData() {
+        list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         map.put("page", "1");
         HelloHttp.sendGetRequest("api/dynamic", map, new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e("FollowActivity", "FAILURE");
+                Log.e("HomeFragment", "FAILURE");
                 Looper.prepare();
                 Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
                 Looper.loop();
@@ -226,9 +209,11 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                     JSONObject jsonObject1 = new JSONObject(responseData);
                     String result = jsonObject1.getString("status");
                     if(result.equals("Success")) {
-                        JSONArray jsonArray = jsonObject1.getJSONArray("result");
-                        for(int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
+                        JSONArray jsonArray2 = jsonObject1.getJSONArray("photoList");
+                        final int length1 = jsonArray1.length();
+                        for(int i = 0; i < length1; i++) {
+                            JSONObject jsonObject = jsonArray1.getJSONObject(i);
                             final Dynamic dynamic = new Dynamic();
                             dynamic.setUsername(jsonObject.getString("username"));
                             dynamic.setIntroduction(jsonObject.getString("introduction"));
@@ -238,55 +223,23 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             dynamic.setCom_num(jsonObject.getInt("com_num"));
                             dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
                             dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
-                            int postId = jsonObject.getInt("post_id");
-                            dynamic.setId(postId);
+                            dynamic.setId(jsonObject.getInt("post_id"));
                             dynamic.setUserId(jsonObject.getInt("user_id"));
-                            Map<String, Object> map2 = new HashMap<>();
-                            map2.put("postid", postId);
-                            HelloHttp.sendGetRequest("api/photoList", map2, new okhttp3.Callback() {
-                                @Override
-                                public void onFailure(Call call, IOException e) {
-                                    Log.e("DetailActivity", "FAILURE");
-                                    Looper.prepare();
-                                    Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-
-                                @Override
-                                public void onResponse(Call call, Response response) throws IOException {
-                                    String responseData = response.body().string();
-                                    Log.d("DetailActivity", responseData);
-                                    try {
-                                        JSONObject jsonObject1 = new JSONObject(responseData);
-                                        JSONArray jsonArray = jsonObject1.getJSONArray("result");
-                                        ArrayList<String> arrayList = new ArrayList<>();
-                                        ArrayList<String> thumbList = new ArrayList<>();
-                                        for (int i = 0; i < jsonArray.length(); i++) {
-                                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                            arrayList.add("http://ktchen.cn"+jsonObject.getString("photo"));
-                                            thumbList.add("http://ktchen.cn"+jsonObject.getString("photo_thumbnail"));
-                                        }
-                                        dynamic.setPhotos(arrayList);
-                                        dynamic.setThumbnails(thumbList);
-                                        list.add(dynamic);
-                                        mHandler.sendEmptyMessageDelayed(1, 0);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        String result = null;
-                                        try {
-                                            result = new JSONObject(responseData).getString("status");
-                                            Looper.prepare();
-                                            Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-                                            Looper.loop();
-                                        } catch (JSONException e1) {
-                                            e1.printStackTrace();
-                                        }
-                                    }
-                                }
-                            });
+                            JSONArray jsonArray = jsonArray2.getJSONArray(i);
+                            ArrayList<String> arrayList = new ArrayList<>();
+                            ArrayList<String> thumbList = new ArrayList<>();
+                            final int length2 = jsonArray.length();
+                            for (int j = 0; j < length2; j++) {
+                                JSONObject jsonObject2 = jsonArray.getJSONObject(j);
+                                arrayList.add("http://ktchen.cn" + jsonObject2.getString("photo"));
+                                thumbList.add("http://ktchen.cn" + jsonObject2.getString("photo_thumbnail"));
+                            }
+                            dynamic.setPhotos(arrayList);
+                            dynamic.setThumbnails(thumbList);
+                            list.add(dynamic);
+                            mHandler.sendEmptyMessageDelayed(1, 0);
                         }
-                        Log.d("HomeFragment", Integer.toString(list.size()));
-                        //last_post_id = list.get(list.size()-1).getId();
+                        last_post_id = list.get(list.size()-1).getId();
                     }
                     else {
                         Looper.prepare();
@@ -301,6 +254,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     }
 
     private void initAdapter() {
+
         recyclerView.setAdapter(adapter);
     }
 
