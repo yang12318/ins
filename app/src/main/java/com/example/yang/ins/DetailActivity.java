@@ -1,6 +1,10 @@
 package com.example.yang.ins;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +26,8 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
@@ -61,6 +67,8 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
     private int myId = -9;
     final Dynamic dynamic = new Dynamic();
     private boolean flag = false;
+    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
+    private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
     BGANinePhotoLayout ninePhotoLayout;
 
     @Override
@@ -655,7 +663,56 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
             @Override
             public void run() {
                 dynamic.setIs_like(flag);
-                ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
+                //ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
+                if(flag) {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_like, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_like, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_like, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_like.setImageResource(R.drawable.like2);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // heartAnimationsMap.remove(holder);
+                            //dispatchChangeFinishedIfAllAnimationsEnded(holder);
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+                }
+                else {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_like, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_like, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_like, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_like.setImageResource(R.drawable.like);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+                }
             }
         });
     }
@@ -665,7 +722,55 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
             @Override
             public void run() {
                 dynamic.setIs_collect(flag);
-                ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
+                //ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
+                if(flag) {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_collect, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_collect, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_collect, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_collect.setImageResource(R.drawable.collect2);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                }
+                else {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_collect, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_collect, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_collect, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_collect.setImageResource(R.drawable.collect);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // heartAnimationsMap.remove(holder);
+                            //dispatchChangeFinishedIfAllAnimationsEnded(holder);
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+                }
             }
         });
     }

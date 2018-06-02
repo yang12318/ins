@@ -1,6 +1,10 @@
 package com.example.yang.ins;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -23,6 +27,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextSwitcher;
@@ -64,6 +70,8 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
     private int Userid = -10;
     BGANinePhotoLayout mCurrentClickNpl;
     private static final int PRC_PHOTO_PREVIEW = 1;
+    private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
+    private static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator(4);
     private View view;
     public static DynamicFragment newInstance(String param1) {
         DynamicFragment fragment = new DynamicFragment();
@@ -635,8 +643,57 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             @Override
             public void run() {
                 list.get(position).setIs_like(flag);
-                ImageButton ib_like = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_like);
-                ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
+                final ImageButton ib_like = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_like);
+                //ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
+                if(flag) {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_like, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_like, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_like, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_like.setImageResource(R.drawable.like2);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            // heartAnimationsMap.remove(holder);
+                            //dispatchChangeFinishedIfAllAnimationsEnded(holder);
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+                }
+                else {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_like, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_like, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_like, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_like.setImageResource(R.drawable.like);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+                }
             }
         });
     }
@@ -646,8 +703,57 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             @Override
             public void run() {
                 list.get(position).setIs_collect(flag);
-                ImageButton ib_collect = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_collect);
-                ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
+                final ImageButton ib_collect = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_collect);
+                //ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
+                if(flag) {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_collect, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_collect, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_collect, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_collect.setImageResource(R.drawable.collect2);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+
+                }
+                else {
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(ib_collect, "rotation", 0f, 360f);
+                    rotationAnim.setDuration(300);
+                    rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
+                    ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(ib_collect, "scaleX", 0.2f, 1f);
+                    bounceAnimX.setDuration(300);
+                    bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(ib_collect, "scaleY", 0.2f, 1f);
+                    bounceAnimY.setDuration(300);
+                    bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
+                    bounceAnimY.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            ib_collect.setImageResource(R.drawable.collect);
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+                    });
+                    animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
+                    animatorSet.start();
+                }
             }
         });
     }
