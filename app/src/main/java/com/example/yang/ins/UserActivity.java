@@ -238,111 +238,111 @@ public class UserActivity extends AppCompatActivity {
         btn_follow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!flag) {
-                    //现在是没关注状态
-                    setButtonStyle(true);
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("pk", userId);
-                    HelloHttp.sendPostRequest("api/user/followyou", map, new okhttp3.Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            Log.e("UserActivity", "FAILURE");
+            if(!flag) {
+                //现在是没关注状态
+                setButtonStyle(true);
+                Map<String, Object> map = new HashMap<>();
+                map.put("pk", userId);
+                HelloHttp.sendPostRequest("api/user/followyou", map, new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.e("UserActivity", "FAILURE");
+                        setButtonStyle(false);
+                        Looper.prepare();
+                        Toast.makeText(UserActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("UserActivity", responseData);
+                        String result = null;
+                        try {
+                            result = new JSONObject(responseData).getString("status");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                             setButtonStyle(false);
-                            Looper.prepare();
-                            Toast.makeText(UserActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
-                            Looper.loop();
                         }
-
-                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String responseData = response.body().string();
-                            Log.d("UserActivity", responseData);
-                            String result = null;
-                            try {
-                                result = new JSONObject(responseData).getString("status");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                setButtonStyle(false);
-                            }
-                            if(result != null && result.equals("Success")) {
-                                Looper.prepare();
+                        if(result != null && result.equals("Success")) {
+                            Looper.prepare();
 //                                setButtonStyle(true);
-                                //flag = true;
-                                Toast.makeText(UserActivity.this, "关注成功", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-                            else {
-                                setButtonStyle(false);
-                                if(result != null && result.equals("UnknownError")) {
-                                    Looper.prepare();
-                                    Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-                                else if(result != null && result.equals("Failure")) {
-                                    Looper.prepare();
-                                    Toast.makeText(UserActivity.this, "错误：重复的关注请求，已取消关注", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-                                else {
-                                    Looper.prepare();
-                                    Toast.makeText(UserActivity.this, result, Toast.LENGTH_SHORT ).show();
-                                    Looper.loop();
-                                }
-                            }
-                        }
-                    });
-                }
-                else {
-                    //现在是关注状态
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("pk", userId);
-                    setButtonStyle(false);
-                    HelloHttp.sendDeleteRequest("api/user/followyou", map, new okhttp3.Callback() {
-                        @Override
-                        public void onFailure(Call call, IOException e) {
-                            Log.e("UserActivity", "FAILURE");
-                            setButtonStyle(true);
-                            Looper.prepare();
-                            Toast.makeText(UserActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                            //flag = true;
+                            Toast.makeText(UserActivity.this, "关注成功", Toast.LENGTH_SHORT).show();
                             Looper.loop();
                         }
-
-                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                        @Override
-                        public void onResponse(Call call, Response response) throws IOException {
-                            String responseData = response.body().string();
-                            Log.d("UserActivity", responseData);
-                            String result = null;
-                            try {
-                                result = new JSONObject(responseData).getString("status");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                setButtonStyle(true);
-                            }
-                            if(result != null && result.equals("Success")) {
+                        else {
+                            setButtonStyle(false);
+                            if(result != null && result.equals("UnknownError")) {
                                 Looper.prepare();
-                                //setButtonStyle(false);
-                                //flag = false;
-                                Toast.makeText(UserActivity.this, "已取消关注", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else if(result != null && result.equals("Failure")) {
+                                Looper.prepare();
+                                Toast.makeText(UserActivity.this, "错误：重复的关注请求，已取消关注", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
-                                setButtonStyle(true);
-                                if(result != null && result.equals("UnknownError")) {
-                                    Looper.prepare();
-                                    Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-                                else {
-                                    Looper.prepare();
-                                    Toast.makeText(UserActivity.this, result, Toast.LENGTH_SHORT ).show();
-                                    Looper.loop();
-                                }
+                                Looper.prepare();
+                                Toast.makeText(UserActivity.this, result, Toast.LENGTH_SHORT ).show();
+                                Looper.loop();
                             }
                         }
-                    });
-                }
+                    }
+                });
+            }
+            else {
+                //现在是关注状态
+                Map<String, Object> map = new HashMap<>();
+                map.put("pk", userId);
+                setButtonStyle(false);
+                HelloHttp.sendDeleteRequest("api/user/followyou", map, new okhttp3.Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        Log.e("UserActivity", "FAILURE");
+                        setButtonStyle(true);
+                        Looper.prepare();
+                        Toast.makeText(UserActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
+
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String responseData = response.body().string();
+                        Log.d("UserActivity", responseData);
+                        String result = null;
+                        try {
+                            result = new JSONObject(responseData).getString("status");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            setButtonStyle(true);
+                        }
+                        if(result != null && result.equals("Success")) {
+                            Looper.prepare();
+                            //setButtonStyle(false);
+                            //flag = false;
+                            Toast.makeText(UserActivity.this, "已取消关注", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+                        else {
+                            setButtonStyle(true);
+                            if(result != null && result.equals("UnknownError")) {
+                                Looper.prepare();
+                                Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else {
+                                Looper.prepare();
+                                Toast.makeText(UserActivity.this, result, Toast.LENGTH_SHORT ).show();
+                                Looper.loop();
+                            }
+                        }
+                    }
+                });
+            }
             }
         });
     }

@@ -70,6 +70,10 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         Intent intent = getIntent();
         postId = intent.getIntExtra("id", 0);
         userId = intent.getIntExtra("user_id", -10);
+        if(userId == -10) {
+            Toast.makeText(DetailActivity.this, "Intent错误", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Log.d("DetailActivity", "postid="+Integer.toString(postId));
         Log.d("DetailActivity", "userid="+Integer.toString(userId));
         refreshView = (FunGameRefreshView) findViewById(R.id.refreshview);
@@ -213,34 +217,18 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         tv_username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int myId = -9;
-                if(userId == -10) {
-                    Toast.makeText(DetailActivity.this, "Intent错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                MainApplication app = MainApplication.getInstance();
-                Map<String, Integer> mapParam = app.mInfoMap;
-                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-                    if(item_map.getKey().equals("id")) {
-                        myId = item_map.getValue();
-                    }
-                }
-                if(myId == -9) {
-                    Toast.makeText(DetailActivity.this, "全局内存中变量为空", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(myId == userId) {
-                    //这个人是我自己
-                    Intent intent = new Intent(DetailActivity.this, MainActivity.class);
-                    intent.putExtra("me_id",userId );
-                    startActivity(intent);
-                }
-                else {
-                    //这个人不是我
-                    Intent intent = new Intent(DetailActivity.this, UserActivity.class);
-                    intent.putExtra("userId", userId);
-                    startActivity(intent);
-                }
+            if(myId == userId) {
+                //这个人是我自己
+                Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+                intent.putExtra("me_id",userId );
+                startActivity(intent);
+            }
+            else {
+                //这个人不是我
+                Intent intent = new Intent(DetailActivity.this, UserActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+            }
             }
         });
         ib_like.setOnClickListener(new View.OnClickListener() {

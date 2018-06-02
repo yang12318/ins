@@ -182,242 +182,254 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, final int position) {
-                if (view.getId() == R.id.tv_username || view.getId() == R.id.ci_head) {
-                    int myId = -9;
-                    int userId = list.get(position).getUserId();
-                    MainApplication app = MainApplication.getInstance();
-                    Map<String, Integer> mapParam = app.mInfoMap;
-                    for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-                        if(item_map.getKey().equals("id")) {
-                            myId = item_map.getValue();
-                        }
-                    }
-                    if(myId == -9) {
-                        Toast.makeText(getActivity(), "全局内存中变量为空", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if(myId == userId) {
-                        //这个人是我自己
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("me_id",userId);
-                        startActivity(intent);
-                    }
-                    else {
-                        //这个人不是我
-                        Intent intent = new Intent(getActivity(), UserActivity.class);
-                        intent.putExtra("userId", userId);
-                        startActivity(intent);
+            if (view.getId() == R.id.tv_username || view.getId() == R.id.ci_head) {
+                int myId = -9;
+                int userId = list.get(position).getUserId();
+                MainApplication app = MainApplication.getInstance();
+                Map<String, Integer> mapParam = app.mInfoMap;
+                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                    if(item_map.getKey().equals("id")) {
+                        myId = item_map.getValue();
                     }
                 }
-                else if(view.getId() == R.id.ib_comment || view.getId() == R.id.tv_comment) {
-                    Intent intent = new Intent(getActivity(), CommentActivity.class);
-                    intent.putExtra("post_id", list.get(position).getId());
+                if(myId == -9) {
+                    Toast.makeText(getActivity(), "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(myId == userId) {
+                    //这个人是我自己
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("me_id",userId);
                     startActivity(intent);
                 }
-                else if(view.getId() == R.id.ib_like) {
-                    int pk = list.get(position).getId();
-                    final boolean flag = list.get(position).isIs_like();
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("pk", pk);
-                    if(!flag){
-                        //未点赞
-                        setLikeStyle(true,position);
-                        HelloHttp.sendPostRequest("api/post/dianzan", map, new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.e("Detail", "FAILURE");
-                                Looper.prepare();
+                else {
+                    //这个人不是我
+                    Intent intent = new Intent(getActivity(), UserActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
+                }
+            }
+            else if(view.getId() == R.id.ib_comment || view.getId() == R.id.tv_comment) {
+                Intent intent = new Intent(getActivity(), CommentActivity.class);
+                intent.putExtra("post_id", list.get(position).getId());
+                startActivity(intent);
+            }
+            else if(view.getId() == R.id.ib_like) {
+                int pk = list.get(position).getId();
+                final boolean flag = list.get(position).isIs_like();
+                Map<String, Object> map = new HashMap<>();
+                map.put("pk", pk);
+                if(!flag){
+                    //未点赞
+                    setLikeStyle(true,position);
+                    HelloHttp.sendPostRequest("api/post/dianzan", map, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("Detail", "FAILURE");
+                            Looper.prepare();
+                            setLikeStyle(false,position);
+                            Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("Detail", responseData);
+                            String result = null;
+                            try {
+                                result = new JSONObject(responseData).getString("status");
+                            } catch (JSONException e) {
                                 setLikeStyle(false,position);
-                                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                            if(result.equals("Success")) {
+                                Looper.prepare();
+                                Toast.makeText(getActivity(),"点赞成功", Toast.LENGTH_SHORT).show();
+                                //list.get(position).setIs_like(true);
+                                //setLikeStyle(true,position);
                                 Looper.loop();
                             }
+                            else if(result.equals("Failure")) {
+                                Looper.prepare();
+                                setLikeStyle(false,position);
+                                Toast.makeText(getActivity(),"记录已存在", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else if(result.equals("UnknownError")){
+                                Looper.prepare();
+                                setLikeStyle(false,position);
+                                Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else {
+                                Looper.prepare();
+                                Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+                                setLikeStyle(false, position);
+                                Looper.loop();
+                            }
+                        }
+                    });
+                }
+                else {
+                    //已点赞
+                    setLikeStyle(false,position);
+                    HelloHttp.sendDeleteRequest("api/post/dianzan", map, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("Detail", "FAILURE");
+                            Looper.prepare();
+                            setLikeStyle(true,position);
+                            Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
 
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseData = response.body().string();
-                                Log.d("Detail", responseData);
-                                String result = null;
-                                try {
-                                    result = new JSONObject(responseData).getString("status");
-                                } catch (JSONException e) {
-                                    setLikeStyle(false,position);
-                                    e.printStackTrace();
-                                }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("Detail", responseData);
+                            String result = null;
+                            try {
+                                result = new JSONObject(responseData).getString("status");
+                            } catch (JSONException e) {
+                                setLikeStyle(true,position);
+                                e.printStackTrace();
+                            }
+                            if(result.equals("Success")) {
+                                Looper.prepare();
+                                //list.get(position).setIs_like(false);
+                                //setLikeStyle(false,position);
+                                Toast.makeText(getActivity(),"取消点赞成功", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else if(result.equals("Failure")) {
+                                Looper.prepare();
+                                setLikeStyle(true,position);
+                                Toast.makeText(getActivity(),"记录不存在", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else if(result.equals("UnknownError")){
+                                Looper.prepare();
+                                setLikeStyle(true,position);
+                                Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else {
+                                Looper.prepare();
+                                Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+                                setLikeStyle(true, position);
+                                Looper.loop();
+                            }
+                        }
+                    });
+                }
+            }
+            else if(view.getId() == R.id.ib_collect) {
+                boolean flag = list.get(position).isIs_collect();
+                if(!flag){
+                    //未收藏
+                    int pk = list.get(position).getId();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("post_id", pk);
+                    setCollectStyle(true,position);
+                    HelloHttp.sendPostRequest("api/post/like", map, new okhttp3.Callback() {
+
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("Detail", "FAILURE");
+                            Looper.prepare();
+                            setCollectStyle(false,position);
+                            Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("Detail", responseData);
+                            String result = null;
+                            try {
+                                result = new JSONObject(responseData).getString("status");
+                            } catch (JSONException e) {
+                                setCollectStyle(false,position);
+                                e.printStackTrace();
+                            }
+                            if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    Toast.makeText(getActivity(),"点赞成功", Toast.LENGTH_SHORT).show();
-                                    list.get(position).setIs_like(true);
-                                    setLikeStyle(true,position);
+                                    setCollectStyle(true,position);
+                                    list.get(position).setIs_collect(true);
+                                    Toast.makeText(getActivity(),"收藏成功", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {
                                     Looper.prepare();
-                                    setLikeStyle(false,position);
+                                    setCollectStyle(false,position);
                                     Toast.makeText(getActivity(),"记录已存在", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("UnknownError")){
                                     Looper.prepare();
-                                    setLikeStyle(false,position);
+                                    setCollectStyle(false,position);
                                     Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                             }
-                        });
-                    }
-                    else {
-                        //已点赞
-                        setLikeStyle(false,position);
-                        HelloHttp.sendDeleteRequest("api/post/dianzan", map, new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.e("Detail", "FAILURE");
-                                Looper.prepare();
-                                setLikeStyle(true,position);
-                                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
+                        }
+                    });
+                }
+                else {
+                    //已收藏
+                    int pk = list.get(position).getId();
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", pk);
+                    setCollectStyle(false,position);
+                    HelloHttp.sendDeleteRequest("api/post/like", map, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("Detail", "FAILURE");
+                            Looper.prepare();
+                            setCollectStyle(true,position);
+                            Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
 
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseData = response.body().string();
-                                Log.d("Detail", responseData);
-                                String result = null;
-                                try {
-                                    result = new JSONObject(responseData).getString("status");
-                                } catch (JSONException e) {
-                                    setLikeStyle(true,position);
-                                    e.printStackTrace();
-                                }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("Detail", responseData);
+                            String result = null;
+                            try {
+                                result = new JSONObject(responseData).getString("status");
+                            } catch (JSONException e) {
+                                setCollectStyle(true,position);
+                                e.printStackTrace();
+                            }
+                            if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    list.get(position).setIs_like(false);
-                                    setLikeStyle(false,position);
-                                    Toast.makeText(getActivity(),"取消点赞成功", Toast.LENGTH_SHORT).show();
+                                    //setCollectStyle(false,position);
+                                    //list.get(position).setIs_collect(false);
+                                    Toast.makeText(getActivity(),"取消收藏成功", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
-                                else if(result.equals("Failure")) {
-                                    Looper.prepare();
-                                    setLikeStyle(true,position);
-                                    Toast.makeText(getActivity(),"记录不存在", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-                                else if(result.equals("UnknownError")){
-                                    Looper.prepare();
-                                    setLikeStyle(true,position);
-                                    Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
-                            }
-                        });
-                    }
-                }
-                else if(view.getId() == R.id.ib_collect) {
-                    boolean flag = list.get(position).isIs_collect();
-                    if(!flag){
-                        //未收藏
-                        int pk = list.get(position).getId();
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("post_id", pk);
-                        setCollectStyle(true,position);
-                        HelloHttp.sendPostRequest("api/post/like", map, new okhttp3.Callback() {
-
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.e("Detail", "FAILURE");
-                                Looper.prepare();
-                                setCollectStyle(false,position);
-                                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseData = response.body().string();
-                                Log.d("Detail", responseData);
-                                String result = null;
-                                try {
-                                    result = new JSONObject(responseData).getString("status");
-                                } catch (JSONException e) {
-                                    setCollectStyle(false,position);
-                                    e.printStackTrace();
-                                }
-                                if (result != null) {
-                                    if(result.equals("Success")) {
-                                        Looper.prepare();
-                                        setCollectStyle(true,position);
-                                        list.get(position).setIs_collect(true);
-                                        Toast.makeText(getActivity(),"收藏成功", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
-                                    else if(result.equals("Failure")) {
-                                        Looper.prepare();
-                                        setCollectStyle(false,position);
-                                        Toast.makeText(getActivity(),"记录已存在", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
-                                    else if(result.equals("UnknownError")){
-                                        Looper.prepare();
-                                        setCollectStyle(false,position);
-                                        Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    else {
-                        //已收藏
-                        int pk = list.get(position).getId();
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("id", pk);
-                        setCollectStyle(false,position);
-                        HelloHttp.sendDeleteRequest("api/post/like", map, new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.e("Detail", "FAILURE");
-                                Looper.prepare();
-                                setCollectStyle(true,position);
-                                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
-                            }
-
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseData = response.body().string();
-                                Log.d("Detail", responseData);
-                                String result = null;
-                                try {
-                                    result = new JSONObject(responseData).getString("status");
-                                } catch (JSONException e) {
-                                    setCollectStyle(true,position);
-                                    e.printStackTrace();
-                                }
-                                if (result != null) {
-                                    if(result.equals("Success")) {
-                                        Looper.prepare();
-                                        setCollectStyle(false,position);
-                                        list.get(position).setIs_collect(false);
-                                        Toast.makeText(getActivity(),"取消收藏成功", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
 //                                else if(result.equals("Failure")) {
 //                                    Looper.prepare();
 //                                    setCollectStyle(true);
 //                                    Toast.makeText(DetailActivity.this,"记录不存在", Toast.LENGTH_SHORT).show();
 //                                    Looper.loop();
 //                                }
-                                    else if(result.equals("UnknownError")){
-                                        Looper.prepare();
-                                        setCollectStyle(true,position);
-                                        Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
+                                else if(result.equals("UnknownError")){
+                                    Looper.prepare();
+                                    setCollectStyle(true,position);
+                                    Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
                                 }
                             }
-                        });
-                    }
+                        }
+                    });
                 }
+            }
             }
         });
         recyclerView.setAdapter(adapter);
@@ -542,6 +554,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
+                list.get(position).setIs_like(flag);
                 ImageButton ib_like = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_like);
                 ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
             }
@@ -552,6 +565,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
+                list.get(position).setIs_collect(flag);
                 ImageButton ib_collect = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_collect);
                 ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
             }

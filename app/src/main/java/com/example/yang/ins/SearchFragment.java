@@ -278,126 +278,126 @@ public class SearchFragment extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onItemChildClick(final BaseQuickAdapter adapter, final View view, final int position) {
-                if (view.getId() == R.id.follow_cancel) {
-                    int id = list.get(position).getId();
-                    boolean flag = list.get(position).getIsFollowed();
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("pk", id);
-                    if(flag) {
-                        changeStyle(false, position);
-                        HelloHttp.sendDeleteRequest("api/user/followyou", map, new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.e("FollowActivity", "FAILURE");
+            if (view.getId() == R.id.follow_cancel) {
+                int id = list.get(position).getId();
+                boolean flag = list.get(position).getIsFollowed();
+                Map<String, Object> map = new HashMap<>();
+                map.put("pk", id);
+                if(flag) {
+                    changeStyle(false, position);
+                    HelloHttp.sendDeleteRequest("api/user/followyou", map, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("FollowActivity", "FAILURE");
+                            changeStyle(true, position);
+                            Looper.prepare();
+                            Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @TargetApi(Build.VERSION_CODES.KITKAT)
+                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("FollowActivity", responseData);
+                            String result = null;
+                            try {
+                                result = new JSONObject(responseData).getString("status");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                                 changeStyle(true, position);
+                            }
+                            if(result.equals("Success")) {
                                 Looper.prepare();
-                                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "已取消关注", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
-
-                            @TargetApi(Build.VERSION_CODES.KITKAT)
-                            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseData = response.body().string();
-                                Log.d("FollowActivity", responseData);
-                                String result = null;
-                                try {
-                                    result = new JSONObject(responseData).getString("status");
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    changeStyle(true, position);
-                                }
-                                if(result.equals("Success")) {
+                            else {
+                                changeStyle(true, position);
+                                if(result.equals("UnknownError")) {
                                     Looper.prepare();
-                                    Toast.makeText(getContext(), "已取消关注", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "未知错误", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else {
-                                    changeStyle(true, position);
-                                    if(result.equals("UnknownError")) {
-                                        Looper.prepare();
-                                        Toast.makeText(getContext(), "未知错误", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
-                                    else {
-                                        Looper.prepare();
-                                        Toast.makeText(getContext(), result, Toast.LENGTH_SHORT ).show();
-                                        Looper.loop();
-                                    }
+                                    Looper.prepare();
+                                    Toast.makeText(getContext(), result, Toast.LENGTH_SHORT ).show();
+                                    Looper.loop();
                                 }
                             }
-                        });
-                    }
-                    else {
-                        //没有关注
-                        changeStyle(true, position);
-                        HelloHttp.sendPostRequest("api/user/followyou", map, new okhttp3.Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                Log.e("FollowActivity", "FAILURE");
+                        }
+                    });
+                }
+                else {
+                    //没有关注
+                    changeStyle(true, position);
+                    HelloHttp.sendPostRequest("api/user/followyou", map, new okhttp3.Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            Log.e("FollowActivity", "FAILURE");
+                            changeStyle(false, position);
+                            Looper.prepare();
+                            Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                        }
+
+                        @TargetApi(Build.VERSION_CODES.KITKAT)
+                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();
+                            Log.d("FollowActivity", responseData);
+                            String result = null;
+                            try {
+                                result = new JSONObject(responseData).getString("status");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                                 changeStyle(false, position);
+                            }
+                            if(result != null && result.equals("Success")) {
                                 Looper.prepare();
-                                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "关注成功", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
-
-                            @TargetApi(Build.VERSION_CODES.KITKAT)
-                            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                String responseData = response.body().string();
-                                Log.d("FollowActivity", responseData);
-                                String result = null;
-                                try {
-                                    result = new JSONObject(responseData).getString("status");
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    changeStyle(false, position);
-                                }
-                                if(result != null && result.equals("Success")) {
+                            else {
+                                changeStyle(false, position);
+                                if(result.equals("UnknownError")) {
                                     Looper.prepare();
-                                    Toast.makeText(getContext(), "关注成功", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                                else if(result.equals("Failure")) {
+                                    Looper.prepare();
+                                    Toast.makeText(getContext(), "错误：重复的关注请求，已取消关注", Toast.LENGTH_SHORT).show();
+                                    RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
                                     Looper.loop();
                                 }
                                 else {
-                                    changeStyle(false, position);
-                                    if(result.equals("UnknownError")) {
-                                        Looper.prepare();
-                                        Toast.makeText(getContext(), "未知错误", Toast.LENGTH_SHORT).show();
-                                        Looper.loop();
-                                    }
-                                    else if(result.equals("Failure")) {
-                                        Looper.prepare();
-                                        Toast.makeText(getContext(), "错误：重复的关注请求，已取消关注", Toast.LENGTH_SHORT).show();
-                                        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
-                                        Looper.loop();
-                                    }
-                                    else {
-                                        Looper.prepare();
-                                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT ).show();
-                                        Looper.loop();
-                                    }
+                                    Looper.prepare();
+                                    Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT ).show();
+                                    Looper.loop();
                                 }
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-                else if(view.getId() == R.id.follow_head || view.getId() == R.id.follow_nickname || view.getId() == R.id.follow_username) {
-                    int userId = list.get(position).getId();
-                    if(myId == userId) {
-                        //这个人是我自己
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("me_id",userId );
-                        startActivity(intent);
-                    }
-                    else {
-                        //这个人不是我
-                        Intent intent = new Intent(getActivity(), UserActivity.class);
-                        intent.putExtra("userId", userId);
-                        startActivity(intent);
-                    }
+            }
+            else if(view.getId() == R.id.follow_head || view.getId() == R.id.follow_nickname || view.getId() == R.id.follow_username) {
+                int userId = list.get(position).getId();
+                if(myId == userId) {
+                    //这个人是我自己
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("me_id",userId );
+                    startActivity(intent);
                 }
+                else {
+                    //这个人不是我
+                    Intent intent = new Intent(getActivity(), UserActivity.class);
+                    intent.putExtra("userId", userId);
+                    startActivity(intent);
+                }
+            }
             }
         });
         recyclerView.setAdapter(adapter);

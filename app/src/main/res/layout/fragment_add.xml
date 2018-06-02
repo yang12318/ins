@@ -32,22 +32,6 @@
             android:layout_below="@+id/tb_add"
             android:background="@drawable/toolbar">
         </View>
-        <!--LinearLayout
-            style="@style/MatchWrap.Horizontal"
-            android:layout_width="60dp"
-            android:layout_gravity="end"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="5dp">
-                <TextView
-                    android:id="@+id/tv_publish"
-                    android:layout_width="60dp"
-                    android:layout_height="30dp"
-                    android:text="分享"
-                    android:textSize="18sp"
-                    android:textColor="#1296db"/>
-
-        </LinearLayout-->
-
         <EditText
             android:id="@+id/et_add"
             android:layout_width="match_parent"
