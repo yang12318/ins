@@ -174,7 +174,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                     public void complete() {
                         adapter.notifyDataSetChanged();
                     }
-                }, 2000);
+                }, 3000);
             }
 
             @Override
@@ -563,54 +563,54 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
         }
     }
 
-//    class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
-//
-//        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
-//            super(layoutResId, data);
-//        }
-//
-//        @Override
-//        protected void convert(BaseViewHolder helper, Dynamic item) {
-//            if (mContext == null) {
-//                return;
-//            }
-//            else {
-//            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
-//            helper.setText(R.id.tv_username, item.getUsername());
-//            helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
-//            if (TextUtils.isEmpty(item.getIntroduction())) {
-//                helper.setGone(R.id.tv_detail, false);
-//            }
-//            else {
-//                helper.setVisible(R.id.tv_detail, true);
-//                helper.setText(R.id.tv_detail, item.getIntroduction());
-//            }
-//            helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
-//            helper.setText(R.id.tv_time, item.getPub_time());
-//            helper.addOnClickListener(R.id.ib_like);
-//            helper.addOnClickListener(R.id.ib_comment);
-//            helper.addOnClickListener(R.id.ib_collect);
-//            helper.addOnClickListener(R.id.tv_comment);
-//            helper.addOnClickListener(R.id.ci_head);
-//            helper.addOnClickListener(R.id.tv_username);
-//            helper.addOnClickListener(R.id.ib_menu);
-//            if(item.isIs_like()) {
-//                helper.setImageResource(R.id.ib_like, R.drawable.like2);
-//            }
-//            else {
-//                helper.setImageResource(R.id.ib_like, R.drawable.like1);
-//            }
-//            if(item.isIs_collect()) {
-//                helper.setImageResource(R.id.ib_collect, R.drawable.collect2);
-//            }
-//            else {
-//                helper.setImageResource(R.id.ib_collect, R.drawable.collect1);
-//            }
-//            BGANinePhotoLayout ninePhotoLayout = helper.getView(R.id.npl_item_moment_photos);
-//            ninePhotoLayout.setDelegate(HomeFragment.this);
-//            ninePhotoLayout.setData(item.getThumbnails());
-//        }
-//    }
+    class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
+
+        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
+            super(layoutResId, data);
+        }
+
+        @Override
+        protected void convert(BaseViewHolder helper, Dynamic item) {
+            if (mContext == null) {
+                return;
+            }
+            else {
+            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
+            helper.setText(R.id.tv_username, item.getUsername());
+            helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
+            if (TextUtils.isEmpty(item.getIntroduction())) {
+                helper.setGone(R.id.tv_detail, false);
+            }
+            else {
+                helper.setVisible(R.id.tv_detail, true);
+                helper.setText(R.id.tv_detail, item.getIntroduction());
+            }
+            helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
+            helper.setText(R.id.tv_time, item.getPub_time());
+            helper.addOnClickListener(R.id.ib_like);
+            helper.addOnClickListener(R.id.ib_comment);
+            helper.addOnClickListener(R.id.ib_collect);
+            helper.addOnClickListener(R.id.tv_comment);
+            helper.addOnClickListener(R.id.ci_head);
+            helper.addOnClickListener(R.id.tv_username);
+            helper.addOnClickListener(R.id.ib_menu);
+            if(item.isIs_like()) {
+                helper.setImageResource(R.id.ib_like, R.drawable.like2);
+            }
+            else {
+                helper.setImageResource(R.id.ib_like, R.drawable.like1);
+            }
+            if(item.isIs_collect()) {
+                helper.setImageResource(R.id.ib_collect, R.drawable.collect2);
+            }
+            else {
+                helper.setImageResource(R.id.ib_collect, R.drawable.collect1);
+            }
+            BGANinePhotoLayout ninePhotoLayout = helper.getView(R.id.npl_item_moment_photos);
+            ninePhotoLayout.setDelegate(HomeFragment.this);
+            ninePhotoLayout.setData(item.getThumbnails());
+        }
+    }
     private void setLikeStyle(final boolean flag, final int position) {
         getActivity().runOnUiThread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

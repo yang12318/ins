@@ -13,19 +13,34 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-        <android.support.v7.widget.SearchView
+        android:layout_weight="1"
+        android:orientation="horizontal">
+        <!--<android.support.v7.widget.SearchView
             android:id="@+id/searchEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/search_selector"
             android:queryHint="搜索">
-        </android.support.v7.widget.SearchView>
+        </android.support.v7.widget.SearchView> -->
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_search"
+            />
+        <Button
+            android:text="Search!!!"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_search"
+            />
     </LinearLayout>
-    <LinearLayout
+    <com.ajguan.library.EasyRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10">
+        android:layout_weight="10"
+        android:id="@+id/easylayout"
+        >
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_search"
             android:layout_width="match_parent"
@@ -34,5 +49,5 @@
             android:paddingLeft="8dp"
             android:fadingEdge="none">
         </android.support.v7.widget.RecyclerView>
-    </LinearLayout>
+    </com.ajguan.library.EasyRefreshLayout>
 </LinearLayout>

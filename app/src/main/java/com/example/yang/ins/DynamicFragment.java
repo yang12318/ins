@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
@@ -15,6 +16,7 @@ import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ajguan.library.EasyRefreshLayout;
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.yang.ins.Utils.HelloHttp;
-import com.example.yang.ins.adapter.AlbumAdapter;
-import com.example.yang.ins.adapter.DynamicAdapter;
 import com.example.yang.ins.bean.Dynamic;
 
 import org.json.JSONArray;
@@ -44,6 +46,7 @@ import java.util.Map;
 
 import cn.bingoogolapple.photopicker.activity.BGAPhotoPreviewActivity;
 import cn.bingoogolapple.photopicker.widget.BGANinePhotoLayout;
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.Call;
 import okhttp3.Response;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -200,13 +203,12 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
     private void initData() {
         list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
-//        map.put("page", "1");
-        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid), map, new okhttp3.Callback() {
+        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid),map,new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("DynamicFragment", "FAILURE");
                 Looper.prepare();
-                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
                 Looper.loop();
             }
 
@@ -214,6 +216,51 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             public void onResponse(Call call, Response response) throws IOException {
                 String responseData = response.body().string();
                 Log.d("DynamicFragment", responseData);
+                try {
+                    JSONObject jsonObject1 = new JSONObject(responseData);
+                    JSONArray jsonArray = jsonObject1.getJSONArray("result");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        Dynamic dynamic = new Dynamic();
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        dynamic.setId(jsonObject.getInt("post_id"));
+                        dynamic.setUsername(jsonObject.getString("username"));
+                        dynamic.setIntroduction(jsonObject.getString("introduction"));
+                        dynamic.setPub_time(jsonObject.getString("Pub_time"));
+                        dynamic.setUserId(jsonObject.getInt("user_id"));
+                        dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
+                        dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
+                        dynamic.setPhoto0("http://ktchen.cn"+jsonObject.getString("photo_0"));
+                        dynamic.setSrc("http://ktchen.cn"+jsonObject.getString("profile_picture"));
+                        list.add(dynamic);
+                    }
+                    mHandler.sendEmptyMessageDelayed(1, 0);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    String result = null;
+                    try {
+                        result = new JSONObject(responseData).getString("status");
+                        Looper.prepare();
+                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+//        map.put("page", "1");
+//        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid), map, new okhttp3.Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("DynamicFragment", "FAILURE");
+//                Looper.prepare();
+//                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+//                Looper.loop();
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String responseData = response.body().string();
+//                Log.d("DynamicFragment", responseData);
 //                try{
 //                    JSONObject jsonObject1 = new JSONObject(responseData);
 //                    String result = jsonObject1.getString("status");
@@ -258,7 +305,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
 //                } catch (JSONException e) {
 //                    e.printStackTrace();
 //                }
-            }
+
         });
     }
 
@@ -567,54 +614,54 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
         }
     }
 
-    //    class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
-//
-//        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
-//            super(layoutResId, data);
-//        }
-//
-//        @Override
-//        protected void convert(BaseViewHolder helper, Dynamic item) {
-//            if (mContext == null) {
-//                return;
-//            }
-//            else {
-//            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
-//            helper.setText(R.id.tv_username, item.getUsername());
-//            helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
-//            if (TextUtils.isEmpty(item.getIntroduction())) {
-//                helper.setGone(R.id.tv_detail, false);
-//            }
-//            else {
-//                helper.setVisible(R.id.tv_detail, true);
-//                helper.setText(R.id.tv_detail, item.getIntroduction());
-//            }
-//            helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
-//            helper.setText(R.id.tv_time, item.getPub_time());
-//            helper.addOnClickListener(R.id.ib_like);
-//            helper.addOnClickListener(R.id.ib_comment);
-//            helper.addOnClickListener(R.id.ib_collect);
-//            helper.addOnClickListener(R.id.tv_comment);
-//            helper.addOnClickListener(R.id.ci_head);
-//            helper.addOnClickListener(R.id.tv_username);
-//            helper.addOnClickListener(R.id.ib_menu);
-//            if(item.isIs_like()) {
-//                helper.setImageResource(R.id.ib_like, R.drawable.like2);
-//            }
-//            else {
-//                helper.setImageResource(R.id.ib_like, R.drawable.like1);
-//            }
-//            if(item.isIs_collect()) {
-//                helper.setImageResource(R.id.ib_collect, R.drawable.collect2);
-//            }
-//            else {
-//                helper.setImageResource(R.id.ib_collect, R.drawable.collect1);
-//            }
-//            BGANinePhotoLayout ninePhotoLayout = helper.getView(R.id.npl_item_moment_photos);
-//            ninePhotoLayout.setDelegate(HomeFragment.this);
-//            ninePhotoLayout.setData(item.getThumbnails());
-//        }
-//    }
+        class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
+
+        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
+            super(layoutResId, data);
+        }
+
+        @Override
+        protected void convert(BaseViewHolder helper, Dynamic item) {
+            if (mContext == null) {
+                return;
+            }
+            else {
+            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
+            helper.setText(R.id.tv_username, item.getUsername());
+            helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
+            if (TextUtils.isEmpty(item.getIntroduction())) {
+                helper.setGone(R.id.tv_detail, false);
+            }
+            else {
+                helper.setVisible(R.id.tv_detail, true);
+                helper.setText(R.id.tv_detail, item.getIntroduction());
+            }
+            helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
+            helper.setText(R.id.tv_time, item.getPub_time());
+            helper.addOnClickListener(R.id.ib_like);
+            helper.addOnClickListener(R.id.ib_comment);
+            helper.addOnClickListener(R.id.ib_collect);
+            helper.addOnClickListener(R.id.tv_comment);
+            helper.addOnClickListener(R.id.ci_head);
+            helper.addOnClickListener(R.id.tv_username);
+            helper.addOnClickListener(R.id.ib_menu);
+            if(item.isIs_like()) {
+                helper.setImageResource(R.id.ib_like, R.drawable.like2);
+            }
+            else {
+                helper.setImageResource(R.id.ib_like, R.drawable.like1);
+            }
+            if(item.isIs_collect()) {
+                helper.setImageResource(R.id.ib_collect, R.drawable.collect2);
+            }
+            else {
+                helper.setImageResource(R.id.ib_collect, R.drawable.collect1);
+            }
+            BGANinePhotoLayout ninePhotoLayout = helper.getView(R.id.npl_item_moment_photos);
+            ninePhotoLayout.setDelegate(DynamicFragment.this);
+            ninePhotoLayout.setData(item.getThumbnails());
+        }
+    }
     private void setLikeStyle(final boolean flag, final int position) {
         getActivity().runOnUiThread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

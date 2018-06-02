@@ -206,4 +206,30 @@ public class HelloHttp {
                 build();
         clientWith20sTimeout.newCall(request).enqueue(callback);
     }
+
+    public static void sendSpecialPostRequest(String address, Map<String, Object> urlmap, Map<String, Object> bodymap, okhttp3.Callback callback) {
+        //按照开拓的方式处理url
+        String url = dealAddress(address);
+        //将map中的数据拼接到url后面
+        Set<String> sets = urlmap.keySet();
+        for (String set : sets) {
+            url = url + "&" + set + "=" + String.valueOf(urlmap.get(set));
+        }
+        Log.d("HelloHttp", "finalUrl="+url);
+        //将map中的数据加入表单中
+        FormBody.Builder formBody = new FormBody.Builder();
+        Set<String> sets2 = bodymap.keySet();
+        for (String set : sets2) {
+            formBody.add(set, String.valueOf(bodymap.get(set)));
+        }
+        RequestBody requestBody = formBody.build();
+        //访问url
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .header("Authorization", getAuthorization())
+                .build();
+        client.newCall(request).enqueue(callback);
+    }
 }

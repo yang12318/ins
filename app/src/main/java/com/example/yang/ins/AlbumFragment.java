@@ -45,13 +45,6 @@ public class AlbumFragment extends Fragment{
     private AlbumAdapter adapter;
     protected View view;
     private static int Userid = -10;
-//    public static AlbumFragment newInstance(String text) {
-//        AlbumFragment fragment = new AlbumFragment();
-//        Bundle args = new Bundle();
-//        args.putString("param", text);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
     public AlbumFragment() {
 
     }

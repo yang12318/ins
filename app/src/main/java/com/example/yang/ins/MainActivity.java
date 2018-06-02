@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
         FragmentTransaction transaction = fm.beginTransaction();
         switch (position) {
             case 0:
-                if (mHomeFragment == null) {
+                if(mHomeFragment == null) {
                     mHomeFragment = HomeFragment.newInstance("首页");
                 }
                 transaction.replace(R.id.tb, mHomeFragment);
