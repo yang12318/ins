@@ -15,27 +15,46 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:label">
-        <activity android:name=".MainActivity"  android:windowSoftInputMode="adjustPan|stateHidden"/>
-        <activity android:name=".LoginActivity" >
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            android:screenOrientation="portrait" />
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".Register2Activity" />
-        <activity android:name=".ForgetActivity" />
-        <activity android:name=".Forget2Activity"/>
-        <activity android:name=".ChangeCodeActivity" />
-        <activity android:name=".ReviseActivity" />
-        <activity android:name=".ConcernActivity" />
-        <activity android:name=".FollowActivity" />
-        <activity android:name=".UserActivity" />
-        <activity android:name=".CommentActivity" />
-        <activity android:name=".LikeActivity" />
-        <activity android:name=".DetailActivity" />
-        <activity android:name=".CollectActivity"></activity>
+        <activity android:name=".RegisterActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Register2Activity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ForgetActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Forget2Activity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ChangeCodeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ReviseActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ConcernActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FollowActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".UserActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CommentActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".LikeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".DetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CollectActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

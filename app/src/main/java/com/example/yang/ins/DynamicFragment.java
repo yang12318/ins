@@ -2,6 +2,7 @@ package com.example.yang.ins;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -247,6 +250,8 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                 Looper.prepare();
                                 Toast.makeText(getActivity(),"点赞成功", Toast.LENGTH_SHORT).show();
                                 //list.get(position).setIs_like(true);
+                                list.get(position).setLikes_num(list.get(position).getLikes_num()+1);
+                                addLikeNum(position);
                                 //setLikeStyle(true,position);
                                 Looper.loop();
                             }
@@ -299,6 +304,8 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                 Looper.prepare();
                                 //list.get(position).setIs_like(false);
                                 //setLikeStyle(false,position);
+                                list.get(position).setLikes_num(list.get(position).getLikes_num()-1);
+                                addLikeNum(position);
                                 Toast.makeText(getActivity(),"取消点赞成功", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
@@ -357,8 +364,8 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    setCollectStyle(true,position);
-                                    list.get(position).setIs_collect(true);
+                                    //setCollectStyle(true,position);
+                                    //list.get(position).setIs_collect(true);
                                     Toast.makeText(getActivity(),"收藏成功", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
@@ -372,6 +379,12 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                     Looper.prepare();
                                     setCollectStyle(false,position);
                                     Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                                else {
+                                    Looper.prepare();
+                                    setCollectStyle(false, position);
+                                    Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                             }
@@ -425,10 +438,77 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                     Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
+                                else {
+                                    Looper.prepare();
+                                    setCollectStyle(true, position);
+                                    Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
                             }
                         }
                     });
                 }
+            }
+            else if(view.getId() == R.id.ib_menu) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); //定义一个AlertDialog
+                String[] strarr = {"删除动态","取消"};
+                builder.setItems(strarr, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface arg0, int arg1)
+                    {
+                    if (arg1 == 0) {
+                        Map<String, Object> map = new HashMap<>();
+                        Map<String, Object> urlmap = new HashMap<>();
+                        urlmap.put("pk", list.get(position).getId());
+                        HelloHttp.sendSpecialDeleteRequest("api/dynamic", urlmap, map, new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Log.e("DetailActivity", "FAILURE");
+                                Looper.prepare();
+                                Toast.makeText(getActivity(), "服务器错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String responseData = response.body().string();
+                                Log.d("DetailActivity", responseData);
+                                try{
+                                    JSONObject jsonObject = new JSONObject(responseData);
+                                    String result = jsonObject.getString("status");
+                                    if(result.equals("Success")) {
+                                        Looper.prepare();
+                                        Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+                                        initData();
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                initAdapter();
+                                            }
+                                        });
+                                        Looper.loop();
+                                    }
+                                    else if(result.equals("Failure")) {
+                                        Looper.prepare();
+                                        Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+                                        Looper.loop();
+                                    }
+                                    else {
+                                        Looper.prepare();
+                                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+                                        Looper.loop();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }else if(arg1 == 1){
+                        return;
+                    }
+                    }
+                });
+                builder.show();
             }
             }
         });
@@ -568,6 +648,16 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                 list.get(position).setIs_collect(flag);
                 ImageButton ib_collect = (ImageButton) adapter.getViewByPosition(recyclerView, position, R.id.ib_collect);
                 ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
+            }
+        });
+    }
+
+    private void addLikeNum(final int position) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextSwitcher ts = (TextSwitcher) adapter.getViewByPosition(recyclerView, position, R.id.tv_like);
+                ts.setText(Integer.toString(list.get(position).getLikes_num())+"次赞");
             }
         });
     }

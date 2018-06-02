@@ -1,6 +1,7 @@
 package com.example.yang.ins;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -275,8 +276,9 @@ public class MeFragment extends Fragment {
                 startActivity(intent);
                 break;
             case R.id.it_exit:
-                //加入注销账号的逻辑
-                //加入清除存储的逻辑
+                SharedPreferences sharedPreferences;
+                sharedPreferences = getActivity().getSharedPreferences("share", Context.MODE_PRIVATE);
+                sharedPreferences.edit().clear().commit();
                 intent = new Intent(getActivity(), LoginActivity.class);
                 startActivity(intent);
                 break;

@@ -530,56 +530,56 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                 {
                     public void onClick(DialogInterface arg0, int arg1)
                     {
-                        if (arg1 == 0) {
-                            Map<String, Object> map = new HashMap<>();
-                            Map<String, Object> urlmap = new HashMap<>();
-                            urlmap.put("pk", list.get(position).getId());
-                            HelloHttp.sendSpecialDeleteRequest("api/dynamic", urlmap, map, new okhttp3.Callback() {
-                                @Override
-                                public void onFailure(Call call, IOException e) {
-                                    Log.e("DetailActivity", "FAILURE");
-                                    Looper.prepare();
-                                    Toast.makeText(getActivity(), "服务器错误", Toast.LENGTH_SHORT).show();
-                                    Looper.loop();
-                                }
+                    if (arg1 == 0) {
+                        Map<String, Object> map = new HashMap<>();
+                        Map<String, Object> urlmap = new HashMap<>();
+                        urlmap.put("pk", list.get(position).getId());
+                        HelloHttp.sendSpecialDeleteRequest("api/dynamic", urlmap, map, new okhttp3.Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Log.e("DetailActivity", "FAILURE");
+                                Looper.prepare();
+                                Toast.makeText(getActivity(), "服务器错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
 
-                                @Override
-                                public void onResponse(Call call, Response response) throws IOException {
-                                    String responseData = response.body().string();
-                                    Log.d("DetailActivity", responseData);
-                                    try{
-                                        JSONObject jsonObject = new JSONObject(responseData);
-                                        String result = jsonObject.getString("status");
-                                        if(result.equals("Success")) {
-                                            Looper.prepare();
-                                            Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
-                                            initData();
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    initAdapter();
-                                                }
-                                            });
-                                            Looper.loop();
-                                        }
-                                        else if(result.equals("Failure")) {
-                                            Looper.prepare();
-                                            Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
-                                            Looper.loop();
-                                        }
-                                        else {
-                                            Looper.prepare();
-                                            Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-                                            Looper.loop();
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                String responseData = response.body().string();
+                                Log.d("DetailActivity", responseData);
+                                try{
+                                    JSONObject jsonObject = new JSONObject(responseData);
+                                    String result = jsonObject.getString("status");
+                                    if(result.equals("Success")) {
+                                        Looper.prepare();
+                                        Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+                                        initData();
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                initAdapter();
+                                            }
+                                        });
+                                        Looper.loop();
                                     }
+                                    else if(result.equals("Failure")) {
+                                        Looper.prepare();
+                                        Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+                                        Looper.loop();
+                                    }
+                                    else {
+                                        Looper.prepare();
+                                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+                                        Looper.loop();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                        }else if(arg1 == 1){
-                            return;
-                        }
+                            }
+                        });
+                    }else if(arg1 == 1){
+                        return;
+                    }
                     }
                 });
                 builder.show();
