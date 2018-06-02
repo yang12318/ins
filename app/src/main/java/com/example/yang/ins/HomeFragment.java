@@ -20,7 +20,10 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -678,7 +681,14 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             }
             else {
                 helper.setVisible(R.id.tv_detail, true);
-                helper.setText(R.id.tv_detail, item.getIntroduction());
+                String s1 = item.getUsername();
+                String s2 = s1 + item.getIntroduction();
+                Log.d("HomeFragment", s1);
+                Log.d("HomeFragment", s2);
+                SpannableString ss = new SpannableString(s2);
+                ss.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, s1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                //???????
+                helper.setText(R.id.tv_detail, ss);
             }
             helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
             helper.setText(R.id.tv_time, item.getPub_time());
