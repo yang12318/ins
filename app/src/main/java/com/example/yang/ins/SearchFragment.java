@@ -2,6 +2,7 @@ package com.example.yang.ins;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -51,6 +53,7 @@ public class SearchFragment extends Fragment {
     private EasyRefreshLayout easyRefreshLayout;
     private FollowPersonAdapter adapter;
     private int last_user_id = 0;
+    private int myId = -10;
     private String last_string = null;
     public static SearchFragment newInstance(String param1) {
         SearchFragment fragment = new SearchFragment();
@@ -74,11 +77,21 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_search, container, false);
+        MainApplication app = MainApplication.getInstance();
+        Map<String, Integer> mapParam = app.mInfoMap;
+        for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+            if(item_map.getKey().equals("id")) {
+                myId = item_map.getValue();
+            }
+        }
+        if(myId == -10) {
+            Toast.makeText(getContext(), "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
+        }
         list = new ArrayList<>();
         btn_search = (Button) view.findViewById(R.id.btn_search);
         et_search = (EditText) view.findViewById(R.id.et_search);
         et_search.setText("");
-        adapter = new FollowPersonAdapter(R.layout.item_follow, list);
+        adapter = new FollowPersonAdapter(R.layout.item_follow, list, myId);
         initView();
         initAdapter();
         adapter.bindToRecyclerView(recyclerView);
@@ -112,7 +125,7 @@ public class SearchFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_search);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         easyRefreshLayout = (EasyRefreshLayout) view.findViewById(R.id.easylayout);
-        //easyRefreshLayout.setLoadMoreModel(LoadModel.ADVANCE_MODEL, 2);
+        easyRefreshLayout.setEnablePullToRefresh(false);
         easyRefreshLayout.addEasyEvent(new EasyRefreshLayout.EasyEvent() {
             @Override
             public void onLoadMore() {
@@ -182,7 +195,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onRefreshing() {
-
+                //easyRefreshLayout.refreshComplete();
             }
         });
     }
@@ -194,6 +207,13 @@ public class SearchFragment extends Fragment {
         map.put("keyword", s);
         Map<String, Object> map2 = new HashMap<>();
         map2.put("page", 1);
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken()
+                    ,InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         HelloHttp.sendSpecialPostRequest("api/search", map2, map, new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -205,6 +225,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                list.clear();
                 String responseData = response.body().string();
                 Log.d("SearchFragment", responseData);
                 try {
@@ -360,9 +381,18 @@ public class SearchFragment extends Fragment {
                 }
                 else if(view.getId() == R.id.follow_head || view.getId() == R.id.follow_nickname || view.getId() == R.id.follow_username) {
                     int userId = list.get(position).getId();
-                    Intent intent = new Intent(getActivity(), UserActivity.class);
-                    intent.putExtra("userId", userId);
-                    startActivity(intent);
+                    if(myId == userId) {
+                        //这个人是我自己
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.putExtra("me_id",userId );
+                        startActivity(intent);
+                    }
+                    else {
+                        //这个人不是我
+                        Intent intent = new Intent(getActivity(), UserActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
+                    }
                 }
             }
         });

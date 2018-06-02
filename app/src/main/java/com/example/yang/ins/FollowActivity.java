@@ -45,6 +45,7 @@ import okhttp3.Response;
 
 public class FollowActivity extends AppCompatActivity {
     private static int Userid = -10;
+    private static int myId = -10;
     private ImageButton btn_back;
     private List<Person> list;
     private RecyclerView recyclerView;
@@ -54,6 +55,16 @@ public class FollowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_follow);
+        MainApplication app = MainApplication.getInstance();
+        Map<String, Integer> mapParam = app.mInfoMap;
+        for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+            if(item_map.getKey().equals("id")) {
+                myId = item_map.getValue();
+            }
+        }
+        if(myId == -10) {
+            Toast.makeText(FollowActivity.this, "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
+        }
         btn_back = (ImageButton) findViewById(R.id.ib_follow_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +72,7 @@ public class FollowActivity extends AppCompatActivity {
                 finish();
             }
         });
-        adapter = new FollowPersonAdapter(R.layout.item_follow, list);
+        adapter = new FollowPersonAdapter(R.layout.item_follow, list, myId);
         initView();
         initData();
         adapter.setNewData(list);
@@ -103,62 +114,52 @@ public class FollowActivity extends AppCompatActivity {
             Userid = intent.getIntExtra("user_id", -1);
         }
         if(Userid == -1){
-            MainApplication app = MainApplication.getInstance();
-            Map<String, Integer> mapParam = app.mInfoMap;
-            for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-                if(item_map.getKey().equals("id")) {
-                    Userid = item_map.getValue();
-                }
-            }
+            Userid = myId;
         }
-        if(Userid == 0) {
-            Toast.makeText(FollowActivity.this, "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
-        }else {
-            Map<String, Object> map = new HashMap<>();
-            list = new ArrayList<>();
-            map.put("user_id", Userid);
-            HelloHttp.sendGetRequest("api/user/friends", map, new okhttp3.Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("FollowActivity", "FAILURE");
-                    Looper.prepare();
-                    Toast.makeText(FollowActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
-                    Looper.loop();
-                }
+        Map<String, Object> map = new HashMap<>();
+        list = new ArrayList<>();
+        map.put("user_id", Userid);
+        HelloHttp.sendGetRequest("api/user/friends", map, new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("FollowActivity", "FAILURE");
+                Looper.prepare();
+                Toast.makeText(FollowActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                Looper.loop();
+            }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    String responseData = response.body().string();
-                    Log.d("FollowActivity", responseData);
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseData = response.body().string();
+                Log.d("FollowActivity", responseData);
+                try {
+                    JSONObject jsonObject1 = new JSONObject(responseData);
+                    JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
+                    for (int i = 0; i < jsonArray1.length(); i++) {
+                        final Person person = new Person();
+                        JSONObject jsonObject = jsonArray1.getJSONObject(i);
+                        person.setId(jsonObject.getInt("user_id"));
+                        person.setName(jsonObject.getString("username"));
+                        person.setNickname(jsonObject.getString("nickname"));
+                        person.setSrc(jsonObject.getString("profile_picture"));
+                        person.setIsFollowed(jsonObject.getBoolean("is_guanzhu"));
+                        list.add(person);
+                    }
+                    mHandler.sendEmptyMessageDelayed(1, 0);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                     try {
-                        JSONObject jsonObject1 = new JSONObject(responseData);
-                        JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
-                        for (int i = 0; i < jsonArray1.length(); i++) {
-                            final Person person = new Person();
-                            JSONObject jsonObject = jsonArray1.getJSONObject(i);
-                            person.setId(jsonObject.getInt("user_id"));
-                            person.setName(jsonObject.getString("username"));
-                            person.setNickname(jsonObject.getString("nickname"));
-                            person.setSrc(jsonObject.getString("profile_picture"));
-                            person.setIsFollowed(jsonObject.getBoolean("is_guanzhu"));
-                            list.add(person);
-                        }
-                        mHandler.sendEmptyMessageDelayed(1, 0);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        try {
-                            String result = null;
-                            result = new JSONObject(responseData).getString("status");
-                            Looper.prepare();
-                            Toast.makeText(FollowActivity.this, result, Toast.LENGTH_SHORT).show();
-                            Looper.loop();
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        }
+                        String result = null;
+                        result = new JSONObject(responseData).getString("status");
+                        Looper.prepare();
+                        Toast.makeText(FollowActivity.this, result, Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
                     }
                 }
-            });
-        }
+            }
+        });
     }
     private void initAdapter() {
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {

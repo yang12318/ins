@@ -52,12 +52,22 @@ public class CommentActivity extends AppCompatActivity {
     private ReviewAdapter adapter;
     private EditText et_send;
     private ImageButton ib_send;
+    private int myId = -10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
         Intent intent  = getIntent();
         postid = intent.getIntExtra("post_id", 0);
+        MainApplication application = MainApplication.getInstance();
+        Map<String, Integer> mapParam = application.mInfoMap;
+        for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+            if(item_map.getKey().equals("id"))
+                myId = item_map.getValue();
+        }
+        if(myId == -10) {
+            Toast.makeText(CommentActivity.this, "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
+        }
         ib_back = (ImageButton) findViewById(R.id.ib_comment_back);
         et_send = (EditText) findViewById(R.id.et_send);
         ib_send = (ImageButton) findViewById(R.id.ib_send);
@@ -105,9 +115,13 @@ public class CommentActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     Toast.makeText(CommentActivity.this,"发表成功", Toast.LENGTH_SHORT).show();
-                                    InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                                    inputMethodManager.hideSoftInputFromWindow(CommentActivity.this.getCurrentFocus().getWindowToken()
-                                            ,InputMethodManager.HIDE_NOT_ALWAYS);
+                                    try {
+                                        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        inputMethodManager.hideSoftInputFromWindow(CommentActivity.this.getCurrentFocus().getWindowToken()
+                                                ,InputMethodManager.HIDE_NOT_ALWAYS);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     initData();
                                     initAdapter();
                                 }
@@ -223,18 +237,7 @@ public class CommentActivity extends AppCompatActivity {
         adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
-                MainApplication application = MainApplication.getInstance();
-                Map<String, Integer> mapParam = application.mInfoMap;
-                int id = -10;
-                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-                    if(item_map.getKey().equals("id"))
-                        id = item_map.getValue();
-                }
-                if(id == -10) {
-                    Toast.makeText(CommentActivity.this, "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                else if(id == list.get(position).getCommenterId()) {
+                if(myId == list.get(position).getCommenterId()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
                     String[] strarr = {"复制评论到剪贴板","删除评论","取消"};
                     builder.setItems(strarr, new DialogInterface.OnClickListener()
@@ -308,9 +311,19 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 if(view.getId() == R.id.comment_head || view.getId() == R.id.comment_username) {
-                    Intent intent = new Intent(CommentActivity.this, UserActivity.class);
-                    intent.putExtra("userId", list.get(position).getCommenterId());
-                    startActivity(intent);
+                    int userId = list.get(position).getCommenterId();
+                    if(myId == userId) {
+                        //这个人是我自己
+                        Intent intent = new Intent(CommentActivity.this, MainActivity.class);
+                        intent.putExtra("me_id",userId);
+                        startActivity(intent);
+                    }
+                    else {
+                        //这个人不是我
+                        Intent intent = new Intent(CommentActivity.this, UserActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
+                    }
                 }
             }
         });

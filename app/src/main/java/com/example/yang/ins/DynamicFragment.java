@@ -52,18 +52,22 @@ import okhttp3.Response;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-
 public class DynamicFragment extends Fragment implements EasyPermissions.PermissionCallbacks, BGANinePhotoLayout.Delegate{
 
-    private int last_post_id = 0;
-    private static int Userid = -10;
     private List<Dynamic> list;
     private RecyclerView recyclerView;
     private DynamicAdapter adapter;
-//    private EasyRefreshLayout easyRefreshLayout;
+    private int Userid = -10;
     BGANinePhotoLayout mCurrentClickNpl;
     private static final int PRC_PHOTO_PREVIEW = 1;
     private View view;
+    public static DynamicFragment newInstance(String param1) {
+        DynamicFragment fragment = new DynamicFragment();
+        Bundle args = new Bundle();
+        args.putString("agrs1", param1);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public DynamicFragment() {
 
@@ -98,6 +102,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
         adapter.setNewData(list);
         initAdapter();
         adapter.bindToRecyclerView(recyclerView);
+//        adapter.setEmptyView(R.layout.empty_home);
 //        adapter.setHeaderFooterEmpty(true, true);
         return view;
     }
@@ -105,110 +110,18 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
     private void initView() {
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_dynamic);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        easyRefreshLayout = (EasyRefreshLayout) view.findViewById(R.id.easylayout);
-//        easyRefreshLayout.addEasyEvent(new EasyRefreshLayout.EasyEvent() {
-//            @Override
-//            public void onLoadMore() {
-//                Map<String, Object> map = new HashMap<>();
-////                map.put("page", "0");
-//                map.put("post_id", last_post_id);
-//                HelloHttp.sendGetRequest("api/dynamic", map, new okhttp3.Callback() {
-//                    @Override
-//                    public void onFailure(Call call, IOException e) {
-//                        Log.e("HomeFragment", "FAILURE");
-//                        Looper.prepare();
-//                        Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
-//                        Looper.loop();
-//                    }
-//
-//                    @Override
-//                    public void onResponse(Call call, Response response) throws IOException {
-//                        String responseData = response.body().string();
-//                        Log.d("HomeFragment", responseData);
-//                        try{
-//                            JSONObject jsonObject1 = new JSONObject(responseData);
-//                            String result = jsonObject1.getString("status");
-//                            if(result.equals("Success")) {
-//                                JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
-//                                JSONArray jsonArray2 = jsonObject1.getJSONArray("photoList");
-//                                final int length1 = jsonArray1.length();
-//                                for(int i = 0; i < length1; i++) {
-//                                    JSONObject jsonObject = jsonArray1.getJSONObject(i);
-//                                    final Dynamic dynamic = new Dynamic();
-//                                    dynamic.setUsername(jsonObject.getString("username"));
-//                                    dynamic.setIntroduction(jsonObject.getString("introduction"));
-//                                    dynamic.setPub_time(jsonObject.getString("Pub_time"));
-//                                    dynamic.setSrc(jsonObject.getString("profile_picture"));
-//                                    dynamic.setLikes_num(jsonObject.getInt("likes_num"));
-//                                    dynamic.setCom_num(jsonObject.getInt("com_num"));
-//                                    dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
-//                                    dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
-//                                    dynamic.setId(jsonObject.getInt("post_id"));
-//                                    dynamic.setUserId(jsonObject.getInt("user_id"));
-//                                    JSONArray jsonArray = jsonArray2.getJSONArray(i);
-//                                    ArrayList<String> arrayList = new ArrayList<>();
-//                                    ArrayList<String> thumbList = new ArrayList<>();
-//                                    final int length2 = jsonArray.length();
-//                                    for (int j = 0; j < length2; j++) {
-//                                        JSONObject jsonObject2 = jsonArray.getJSONObject(j);
-//                                        arrayList.add("http://ktchen.cn" + jsonObject2.getString("photo"));
-//                                        thumbList.add("http://ktchen.cn" + jsonObject2.getString("photo_thumbnail"));
-//                                    }
-//                                    dynamic.setPhotos(arrayList);
-//                                    dynamic.setThumbnails(thumbList);
-//                                    list.add(dynamic);
-//                                    mHandler.sendEmptyMessageDelayed(1, 0);
-//                                }
-//                                last_post_id = list.get(list.size()-1).getId();
-//                            }
-//                            else if(result.equals("null")){
-//                                Looper.prepare();
-//                                Toast.makeText(getContext(), "没有更多数据了", Toast.LENGTH_SHORT).show();
-//                                Looper.loop();
-//                            }
-//                            else {
-//                                Looper.prepare();
-//                                Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-//                                Looper.loop();
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//                easyRefreshLayout.loadMoreComplete(new EasyRefreshLayout.Event() {
-//                    @Override
-//                    public void complete() {
-//                        adapter.notifyDataSetChanged();
-//                    }
-//                }, 2000);
-//            }
 
-//            @Override
-//            public void onRefreshing() {
-//                initData();
-//                last_post_id = 0;
-//                initAdapter();
-//                easyRefreshLayout.loadMoreComplete(new EasyRefreshLayout.Event() {
-//                    @Override
-//                    public void complete() {
-//                        adapter.setNewData(list);
-//                        easyRefreshLayout.refreshComplete();
-//                    }
-//                }, 500);
-//            }
-//        });
     }
 
     private void initData() {
         list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
-        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid),map,new okhttp3.Callback() {
+        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid), map, new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e("DynamicFragment", "FAILURE");
                 Looper.prepare();
-                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
                 Looper.loop();
             }
 
@@ -216,96 +129,50 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             public void onResponse(Call call, Response response) throws IOException {
                 String responseData = response.body().string();
                 Log.d("DynamicFragment", responseData);
-                try {
+                try{
                     JSONObject jsonObject1 = new JSONObject(responseData);
-                    JSONArray jsonArray = jsonObject1.getJSONArray("result");
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        Dynamic dynamic = new Dynamic();
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dynamic.setId(jsonObject.getInt("post_id"));
-                        dynamic.setUsername(jsonObject.getString("username"));
-                        dynamic.setIntroduction(jsonObject.getString("introduction"));
-                        dynamic.setPub_time(jsonObject.getString("Pub_time"));
-                        dynamic.setUserId(jsonObject.getInt("user_id"));
-                        dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
-                        dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
-                        dynamic.setPhoto0("http://ktchen.cn"+jsonObject.getString("photo_0"));
-                        dynamic.setSrc("http://ktchen.cn"+jsonObject.getString("profile_picture"));
-                        list.add(dynamic);
+                    String result = jsonObject1.getString("status");
+                    if(result.equals("Success")) {
+                        JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
+                        JSONArray jsonArray2 = jsonObject1.getJSONArray("photoList");
+                        final int length1 = jsonArray1.length();
+                        for(int i = 0; i < length1; i++) {
+                            JSONObject jsonObject = jsonArray1.getJSONObject(i);
+                            final Dynamic dynamic = new Dynamic();
+                            dynamic.setUsername(jsonObject.getString("username"));
+                            dynamic.setIntroduction(jsonObject.getString("introduction"));
+                            dynamic.setPub_time(jsonObject.getString("Pub_time"));
+                            dynamic.setSrc(jsonObject.getString("profile_picture"));
+                            dynamic.setLikes_num(jsonObject.getInt("likes_num"));
+                            dynamic.setCom_num(jsonObject.getInt("com_num"));
+                            dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
+                            dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
+                            dynamic.setId(jsonObject.getInt("post_id"));
+                            dynamic.setUserId(jsonObject.getInt("user_id"));
+                            JSONArray jsonArray = jsonArray2.getJSONArray(i);
+                            ArrayList<String> arrayList = new ArrayList<>();
+                            ArrayList<String> thumbList = new ArrayList<>();
+                            final int length2 = jsonArray.length();
+                            for (int j = 0; j < length2; j++) {
+                                JSONObject jsonObject2 = jsonArray.getJSONObject(j);
+                                arrayList.add("http://ktchen.cn" + jsonObject2.getString("photo"));
+                                thumbList.add("http://ktchen.cn" + jsonObject2.getString("photo_thumbnail"));
+                            }
+                            dynamic.setPhotos(arrayList);
+                            dynamic.setThumbnails(thumbList);
+                            list.add(dynamic);
+                            mHandler.sendEmptyMessageDelayed(1, 0);
+                        }
                     }
-                    mHandler.sendEmptyMessageDelayed(1, 0);
+                    else {
+                        Looper.prepare();
+                        Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+                        Looper.loop();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    String result = null;
-                    try {
-                        result = new JSONObject(responseData).getString("status");
-                        Looper.prepare();
-                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-                        Looper.loop();
-                    } catch (JSONException e1) {
-                        e1.printStackTrace();
-                    }
                 }
             }
-//        map.put("page", "1");
-//        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid), map, new okhttp3.Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                Log.e("DynamicFragment", "FAILURE");
-//                Looper.prepare();
-//                Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
-//                Looper.loop();
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String responseData = response.body().string();
-//                Log.d("DynamicFragment", responseData);
-//                try{
-//                    JSONObject jsonObject1 = new JSONObject(responseData);
-//                    String result = jsonObject1.getString("status");
-//                    if(result.equals("Success")) {
-//                        JSONArray jsonArray1 = jsonObject1.getJSONArray("result");
-//                        JSONArray jsonArray2 = jsonObject1.getJSONArray("photoList");
-//                        final int length1 = jsonArray1.length();
-//                        for(int i = 0; i < length1; i++) {
-//                            JSONObject jsonObject = jsonArray1.getJSONObject(i);
-//                            final Dynamic dynamic = new Dynamic();
-//                            dynamic.setUsername(jsonObject.getString("username"));
-//                            dynamic.setIntroduction(jsonObject.getString("introduction"));
-//                            dynamic.setPub_time(jsonObject.getString("Pub_time"));
-//                            dynamic.setSrc(jsonObject.getString("profile_picture"));
-//                            dynamic.setLikes_num(jsonObject.getInt("likes_num"));
-//                            dynamic.setCom_num(jsonObject.getInt("com_num"));
-//                            dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
-//                            dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
-//                            dynamic.setId(jsonObject.getInt("post_id"));
-//                            dynamic.setUserId(jsonObject.getInt("user_id"));
-//                            JSONArray jsonArray = jsonArray2.getJSONArray(i);
-//                            ArrayList<String> arrayList = new ArrayList<>();
-//                            ArrayList<String> thumbList = new ArrayList<>();
-//                            final int length2 = jsonArray.length();
-//                            for (int j = 0; j < length2; j++) {
-//                                JSONObject jsonObject2 = jsonArray.getJSONObject(j);
-//                                arrayList.add("http://ktchen.cn" + jsonObject2.getString("photo"));
-//                                thumbList.add("http://ktchen.cn" + jsonObject2.getString("photo_thumbnail"));
-//                            }
-//                            dynamic.setPhotos(arrayList);
-//                            dynamic.setThumbnails(thumbList);
-//                            list.add(dynamic);
-//                            mHandler.sendEmptyMessageDelayed(1, 0);
-//                        }
-//                        last_post_id = list.get(list.size()-1).getId();
-//                    }
-//                    else {
-//                        Looper.prepare();
-//                        Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-//                        Looper.loop();
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
         });
     }
 
@@ -330,7 +197,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                     if(myId == userId) {
                         //这个人是我自己
                         Intent intent = new Intent(getActivity(), MainActivity.class);
-                        intent.putExtra("me_id",userId );
+                        intent.putExtra("me_id",userId);
                         startActivity(intent);
                     }
                     else {
@@ -614,7 +481,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
         }
     }
 
-        class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
+    class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
 
         public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
             super(layoutResId, data);
@@ -626,7 +493,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                 return;
             }
             else {
-            Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
+                Glide.with(mContext).load("http://ktchen.cn"+item.getSrc()).into((CircleImageView) helper.getView(R.id.ci_head));}
             helper.setText(R.id.tv_username, item.getUsername());
             helper.setText(R.id.tv_like2, item.getLikes_num()+"次赞");
             if (TextUtils.isEmpty(item.getIntroduction())) {
@@ -683,140 +550,3 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
         });
     }
 }
-
-//    private List<Dynamic> mDynamicList;
-//    private RecyclerView recyclerView;
-//    private AlbumAdapter adapter;
-//    protected View view;
-//    private static int Userid = -10;
-//    public DynamicFragment() {
-//
-//    }
-//
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//    }
-//
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        view = inflater.inflate(R.layout.fragment_dynamic, container, false);
-//        Bundle bundle = getArguments();
-//        if (bundle != null) {
-//            Userid = bundle.getInt("id");
-//        }
-//        if (Userid == -1) {
-//            MainApplication app = MainApplication.getInstance();
-//            Map<String, Integer> mapParam = app.mInfoMap;
-//            for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-//                if(item_map.getKey().equals("id")) {
-//                    Userid = item_map.getValue();
-//                }
-//            }
-//        }
-//        adapter = new AlbumAdapter(R.layout.item_dynamic, mDynamicList);
-//        initView();
-//        initData();
-//        adapter.setNewData(mDynamicList);
-//        initAdapter();
-////        adapter.bindToRecyclerView(recyclerView);
-////        adapter.setHeaderFooterEmpty(true, true);
-//        return view;
-//    }
-//
-//    private void initView() {
-//        recyclerView = (RecyclerView) view.findViewById(R.id.rv_dynamic);
-//        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),3));
-//        //recyclerView.addItemDecoration();
-//    }
-//
-//    private void initData() {
-//        mDynamicList = new ArrayList<>();
-//        Map<String, Object> map = new HashMap<>();
-//        mDynamicList = new ArrayList<>();
-//        //map.put("id", id);
-//        HelloHttp.sendGetRequest("api/user/posts/"+Integer.toString(Userid),map,new okhttp3.Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                Log.e("DynamicFragment", "FAILURE");
-//                Looper.prepare();
-//                Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
-//                Looper.loop();
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String responseData = response.body().string();
-//                Log.d("DynamicFragment", responseData);
-//                try {
-//                    JSONObject jsonObject1 = new JSONObject(responseData);
-//                    JSONArray jsonArray = jsonObject1.getJSONArray("result");
-//                    for (int i = 0; i < jsonArray.length(); i++) {
-//                        Dynamic dynamic = new Dynamic();
-//                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                        dynamic.setId(jsonObject.getInt("post_id"));
-//                        dynamic.setUsername(jsonObject.getString("username"));
-//                        dynamic.setIntroduction(jsonObject.getString("introduction"));
-//                        dynamic.setPub_time(jsonObject.getString("Pub_time"));
-//                        dynamic.setUserId(jsonObject.getInt("user_id"));
-//                        dynamic.setIs_like(jsonObject.getBoolean("is_dianzan"));
-//                        dynamic.setIs_collect(jsonObject.getBoolean("is_shoucang"));
-//                        dynamic.setPhoto0("http://ktchen.cn"+jsonObject.getString("photo_0"));
-//                        dynamic.setSrc("http://ktchen.cn"+jsonObject.getString("profile_picture"));
-//                        mDynamicList.add(dynamic);
-//                    }
-//                    mHandler.sendEmptyMessageDelayed(1, 0);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    String result = null;
-//                    try {
-//                        result = new JSONObject(responseData).getString("status");
-//                        Looper.prepare();
-//                        Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-//                        Looper.loop();
-//                    } catch (JSONException e1) {
-//                        e1.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    private void initAdapter() {
-//        //firstAdapter.openLoadAnimation();
-//        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-//                Intent intent = new Intent(getActivity(), DetailActivity.class);
-//                int id = mDynamicList.get(position).getId();
-//                int userid = mDynamicList.get(position).getUserId();
-//                intent.putExtra("id", id);
-//                intent.putExtra("user_id", userid);
-//                startActivity(intent);
-//            }
-//        });
-//        adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-//            @Override
-//            public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-//
-//            }
-//        });
-//        recyclerView.setAdapter(adapter);
-//    }
-//
-//
-//    @SuppressLint("HandlerLeak")
-//    private Handler mHandler = new Handler(){
-//        @SuppressLint("CheckResult")
-//        @Override
-//        public void handleMessage(Message msg)
-//        {
-//            if(msg.what == 1)
-//            {
-//                adapter.setNewData(mDynamicList);
-//            }
-//        }
-//    };
-//}
