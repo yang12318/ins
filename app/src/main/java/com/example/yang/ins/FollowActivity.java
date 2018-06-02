@@ -270,10 +270,31 @@ public class FollowActivity extends AppCompatActivity {
                     }
                 }
                 else if(view.getId() == R.id.follow_head || view.getId() == R.id.follow_nickname || view.getId() == R.id.follow_username) {
+                    int myId = -9;
                     int userId = list.get(position).getId();
-                    Intent intent = new Intent(FollowActivity.this, UserActivity.class);
-                    intent.putExtra("userId", userId);
-                    startActivity(intent);
+                    MainApplication app = MainApplication.getInstance();
+                    Map<String, Integer> mapParam = app.mInfoMap;
+                    for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                        if(item_map.getKey().equals("id")) {
+                            myId = item_map.getValue();
+                        }
+                    }
+                    if(myId == -9) {
+                        Toast.makeText(FollowActivity.this, "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(myId == userId) {
+                        //这个人是我自己
+                        Intent intent = new Intent(FollowActivity.this, MainActivity.class);
+                        intent.putExtra("me_id",userId );
+                        startActivity(intent);
+                    }
+                    else {
+                        //这个人不是我
+                        Intent intent = new Intent(FollowActivity.this, UserActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
+                    }
                 }
             }
         });

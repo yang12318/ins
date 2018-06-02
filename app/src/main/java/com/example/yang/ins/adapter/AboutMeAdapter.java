@@ -15,12 +15,13 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AboutMeAdapter extends BaseMultiItemQuickAdapter<Info1, BaseViewHolder> {
-    public AboutMeAdapter(@Nullable List<Info1> data) {
+    private int myId;
+    public AboutMeAdapter(@Nullable List<Info1> data, int myId) {
         super(data);
         addItemType(1, R.layout.item_about_me_concern);
         addItemType(2, R.layout.item_about_me_like);
         addItemType(3, R.layout.item_about_me_comment);
-
+        this.myId = myId;
     }
     @Override
     protected void convert(BaseViewHolder helper, Info1 item) {
@@ -31,15 +32,20 @@ public class AboutMeAdapter extends BaseMultiItemQuickAdapter<Info1, BaseViewHol
                 helper.addOnClickListener(R.id.btn_follow);
                 helper.addOnClickListener(R.id.me_head);
                 helper.addOnClickListener(R.id.me_username);
-                if(item.getIsFollowed()) {
-                    helper.setText(R.id.btn_follow, "关注中");
-                    helper.setTextColor(R.id.btn_follow, Color.BLACK);
-                    helper.setBackgroundRes(R.id.btn_follow, R.drawable.buttonshape2);
-                }
-                else {
-                    helper.setText(R.id.btn_follow, "关注");
-                    helper.setBackgroundRes(R.id.btn_follow, R.drawable.buttonshape3);
-                    helper.setTextColor(R.id.btn_follow, Color.WHITE);
+                if (item.getUserId() == myId) {
+                    helper.setGone(R.id.btn_follow, false);
+                } else {
+                    helper.setVisible(R.id.btn_follow, true);
+                    if(item.getIsFollowed()) {
+                        helper.setText(R.id.btn_follow, "关注中");
+                        helper.setTextColor(R.id.btn_follow, Color.BLACK);
+                        helper.setBackgroundRes(R.id.btn_follow, R.drawable.buttonshape2);
+                    }
+                    else {
+                        helper.setText(R.id.btn_follow, "关注");
+                        helper.setBackgroundRes(R.id.btn_follow, R.drawable.buttonshape3);
+                        helper.setTextColor(R.id.btn_follow, Color.WHITE);
+                    }
                 }
                 break;
             case 2:

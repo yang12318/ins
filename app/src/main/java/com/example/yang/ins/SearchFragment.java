@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -91,6 +92,9 @@ public class SearchFragment extends Fragment {
         btn_search = (Button) view.findViewById(R.id.btn_search);
         et_search = (EditText) view.findViewById(R.id.et_search);
         et_search.setText("");
+        Drawable db_nickname=getResources().getDrawable(R.drawable.search2);
+        db_nickname.setBounds(0,0,75,75);
+        et_search.setCompoundDrawables(db_nickname,null,null,null);
         adapter = new FollowPersonAdapter(R.layout.item_follow, list, myId);
         initView();
         initAdapter();

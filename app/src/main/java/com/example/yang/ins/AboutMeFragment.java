@@ -47,6 +47,7 @@ public class AboutMeFragment extends Fragment{
     private EasyRefreshLayout easyRefreshLayout;
     private View view;
     private String mtd_id;
+    private static int myId = -10;
     private AboutMeAdapter madapter;
 
     public static AboutMeFragment newInstance(String mtd_id) {
@@ -78,7 +79,17 @@ public class AboutMeFragment extends Fragment{
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_about_me, container, false);
         Log.e("AboutMe", "onCreateView");
-        madapter = new AboutMeAdapter(mInfoList);
+        MainApplication app = MainApplication.getInstance();
+        Map<String, Integer> mapParam = app.mInfoMap;
+        for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+            if(item_map.getKey().equals("id")) {
+                myId = item_map.getValue();
+            }
+        }
+        if(myId == -10) {
+            Toast.makeText(getActivity(), "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
+        }
+        madapter = new AboutMeAdapter(mInfoList,myId);
         madapter.openLoadAnimation(BaseQuickAdapter.SCALEIN);
 //        recyclerView.setAdapter(madapter);
         //adapter = new Info1Adapter(R.layout.item_about_follow, mInfoList);
@@ -203,9 +214,31 @@ public class AboutMeFragment extends Fragment{
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, final int position) {
                 if (view.getId() == R.id.about_me_username || view.getId() == R.id.me_username || view.getId() == R.id.tv_me_username || view.getId() == R.id.about_me_head || view.getId() == R.id.me_head || view.getId() == R.id.ci_me_head) {
-                    Intent intent = new Intent(getActivity(), UserActivity.class);
-                    intent.putExtra("userId", mInfoList.get(position).getUserId());
-                    startActivity(intent);
+                    int myId = -9;
+                    int userId = mInfoList.get(position).getUserId();
+                    MainApplication app = MainApplication.getInstance();
+                    Map<String, Integer> mapParam = app.mInfoMap;
+                    for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                        if(item_map.getKey().equals("id")) {
+                            myId = item_map.getValue();
+                        }
+                    }
+                    if(myId == -9) {
+                        Toast.makeText(getActivity(), "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(myId == userId) {
+                        //这个人是我自己
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.putExtra("me_id",userId );
+                        startActivity(intent);
+                    }
+                    else {
+                        //这个人不是我
+                        Intent intent = new Intent(getActivity(), UserActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
+                    }
                 }
                 else if(view.getId() == R.id.about_me_picture || view.getId() == R.id.iv_me_picture || view.getId() == R.id.tv_me_comment) {
                     Intent intent = new Intent(getActivity(), DetailActivity.class);

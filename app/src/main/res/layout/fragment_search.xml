@@ -10,31 +10,32 @@
     android:paddingRight="10dp"
     android:paddingTop="10dp"
     tools:context="com.example.yang.ins.SearchFragment">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <!--<android.support.v7.widget.SearchView
-            android:id="@+id/searchEdit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/search_selector"
-            android:queryHint="搜索">
-        </android.support.v7.widget.SearchView> -->
+        android:layout_weight="1">
         <EditText
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:id="@+id/et_search"
-            />
-        <Button
-            android:text="Search!!!"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:ems="20"
+            android:drawablePadding="8dp"
+            android:textSize="18sp"
+            android:textColor="#515151"
+            android:textCursorDrawable="@drawable/edit_cursor3"
+            android:background="@drawable/editshape2"
+            android:drawableLeft="@drawable/search2"
+            android:layout_height="50dp"
+            android:id="@+id/et_search" />
+        <Button
+            android:text="搜索"
+            android:background="@null"
+            android:layout_alignParentRight="true"
+            android:layout_width="60dp"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:layout_height="50dp"
             android:id="@+id/btn_search"
             />
-    </LinearLayout>
+    </RelativeLayout>
     <com.ajguan.library.EasyRefreshLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -45,8 +46,6 @@
             android:id="@+id/rv_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingRight="8dp"
-            android:paddingLeft="8dp"
             android:fadingEdge="none">
         </android.support.v7.widget.RecyclerView>
     </com.ajguan.library.EasyRefreshLayout>

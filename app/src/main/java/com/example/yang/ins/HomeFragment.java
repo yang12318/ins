@@ -2,7 +2,6 @@ package com.example.yang.ins;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -21,16 +20,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ajguan.library.EasyRefreshLayout;
-import com.ajguan.library.LoadModel;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.example.yang.ins.Utils.HelloHttp;
-import com.example.yang.ins.adapter.DynamicAdapter;
 import com.example.yang.ins.bean.Dynamic;
 
 import org.json.JSONArray;
@@ -55,6 +51,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class HomeFragment extends Fragment implements EasyPermissions.PermissionCallbacks, BGANinePhotoLayout.Delegate{
 
     private int last_post_id = 0;
+    private static int myId = -10;
     private List<Dynamic> list;
     private RecyclerView recyclerView;
     private DynamicAdapter adapter;
@@ -84,7 +81,17 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
-        adapter = new DynamicAdapter(R.layout.item_dynamic, list);
+        MainApplication app = MainApplication.getInstance();
+        Map<String, Integer> mapParam = app.mInfoMap;
+        for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+            if(item_map.getKey().equals("id")) {
+                myId = item_map.getValue();
+            }
+        }
+        if(myId == -10) {
+            Toast.makeText(getActivity(), "全局内存中保存的信息为空", Toast.LENGTH_SHORT).show();
+        }
+        adapter = new DynamicAdapter(R.layout.item_dynamic, list,myId);
         initView();
         initData();
         adapter.setNewData(list);
@@ -564,9 +571,10 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     }
 
     class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
-
-        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
+        private int myId;
+        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data, int myId) {
             super(layoutResId, data);
+            this.myId = myId;
         }
 
         @Override
@@ -594,6 +602,11 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             helper.addOnClickListener(R.id.ci_head);
             helper.addOnClickListener(R.id.tv_username);
             helper.addOnClickListener(R.id.ib_menu);
+            if (item.getUserId() == myId) {
+                helper.setGone(R.id.ib_menu, true);
+            } else {
+                helper.setVisible(R.id.ib_menu, false);
+            }
             if(item.isIs_like()) {
                 helper.setImageResource(R.id.ib_like, R.drawable.like2);
             }

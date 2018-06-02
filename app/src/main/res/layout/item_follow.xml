@@ -27,7 +27,7 @@
                 android:layout_toRightOf="@id/follow_head"
                 android:text="全名"
                 android:singleLine="true"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
             <TextView
                 android:id="@+id/follow_nickname"

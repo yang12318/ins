@@ -55,6 +55,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class DynamicFragment extends Fragment implements EasyPermissions.PermissionCallbacks, BGANinePhotoLayout.Delegate{
 
     private List<Dynamic> list;
+    private static int myId = -10;
     private RecyclerView recyclerView;
     private DynamicAdapter adapter;
     private int Userid = -10;
@@ -93,10 +94,11 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
                 if(item_map.getKey().equals("id")) {
                     Userid = item_map.getValue();
+                    myId = Userid;
                 }
             }
         }
-        adapter = new DynamicAdapter(R.layout.item_dynamic, list);
+        adapter = new DynamicAdapter(R.layout.item_dynamic, list, myId);
         initView();
         initData();
         adapter.setNewData(list);
@@ -482,9 +484,10 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
     }
 
     class DynamicAdapter extends BaseQuickAdapter<Dynamic, BaseViewHolder> {
-
-        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data) {
+        private int myId;
+        public DynamicAdapter(int layoutResId, @Nullable List<Dynamic> data, int myId) {
             super(layoutResId, data);
+            this.myId = myId;
         }
 
         @Override
@@ -512,6 +515,11 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             helper.addOnClickListener(R.id.ci_head);
             helper.addOnClickListener(R.id.tv_username);
             helper.addOnClickListener(R.id.ib_menu);
+            if (item.getUserId() == myId) {
+                helper.setGone(R.id.ib_menu, true);
+            } else {
+                helper.setVisible(R.id.ib_menu, false);
+            }
             if(item.isIs_like()) {
                 helper.setImageResource(R.id.ib_like, R.drawable.like2);
             }

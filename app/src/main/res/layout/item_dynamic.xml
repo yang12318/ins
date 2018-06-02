@@ -45,8 +45,8 @@
 
             <ImageButton
                 android:id="@+id/ib_menu"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="10dp"
@@ -144,9 +144,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:textSize="12sp"
+                android:inAnimation="@anim/slide_in_likes_counter"
+                android:outAnimation="@anim/slide_out_likes_counter"
                 >
-                <!--android:inAnimation="@anim/slide_in_likes_counter"
-                android:outAnimation="@anim/slide_out_likes_counter"-->
+                <!---->
 
                 <TextView
                     android:id="@+id/tv_like2"
@@ -154,12 +155,12 @@
                     android:layout_height="wrap_content"
                     android:text="0 likes"
                     android:textSize="12sp"
-                    android:textColor="@color/color_moment_like" />
+                    android:textColor="#696969" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/color_moment_like" />
+                    android:textColor="#696969" />
             </TextSwitcher>
         </LinearLayout>
 
@@ -171,7 +172,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="4dp"
             android:text="内容"
-            android:textSize="12sp"
+            android:textSize="13sp"
             />
 
         <TextView
@@ -192,6 +193,6 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:text="时间"
-            android:textSize="10sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 </android.support.v7.widget.CardView>

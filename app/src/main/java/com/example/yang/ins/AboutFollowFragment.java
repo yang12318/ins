@@ -172,10 +172,31 @@ public static AboutFollowFragment newInstance(String mtd_id) {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 if (view.getId() == R.id.about_follow_username || view.getId() == R.id.about_follow_head) {
-                    Log.e("AboutFollowFragment", Integer.toString(mInfoList.get(position).getUserId()));
-                    Intent intent = new Intent(getActivity(), UserActivity.class);
-                    intent.putExtra("userId", mInfoList.get(position).getUserId());
-                    startActivity(intent);
+                    int myId = -9;
+                    int userId = mInfoList.get(position).getUserId();
+                    MainApplication app = MainApplication.getInstance();
+                    Map<String, Integer> mapParam = app.mInfoMap;
+                    for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+                        if(item_map.getKey().equals("id")) {
+                            myId = item_map.getValue();
+                        }
+                    }
+                    if(myId == -9) {
+                        Toast.makeText(getActivity(), "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if(myId == userId) {
+                        //这个人是我自己
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        intent.putExtra("me_id",userId );
+                        startActivity(intent);
+                    }
+                    else {
+                        //这个人不是我
+                        Intent intent = new Intent(getActivity(), UserActivity.class);
+                        intent.putExtra("userId", userId);
+                        startActivity(intent);
+                    }
                 }
                 else if(view.getId() == R.id.about_follow_picture) {
                     Intent intent = new Intent(getActivity(), DetailActivity.class);
