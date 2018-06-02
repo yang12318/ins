@@ -1,5 +1,7 @@
 package com.example.yang.ins;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -9,6 +11,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +19,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -77,14 +83,17 @@ public class CommentActivity extends AppCompatActivity {
                 String s = et_send.getText().toString().trim();
                 if(s.length() <= 0 || s == null) {
                     Toast.makeText(CommentActivity.this, "您还没有填写有效评论", Toast.LENGTH_SHORT).show();
+                    ib_send.startAnimation(AnimationUtils.loadAnimation(CommentActivity.this, R.anim.shake_error));
                     return;
                 }
                 if(s.length() <= 4) {
                     Toast.makeText(CommentActivity.this, "您的评论太短，请填写些有意义的评论再来", Toast.LENGTH_SHORT).show();
+                    ib_send.startAnimation(AnimationUtils.loadAnimation(CommentActivity.this, R.anim.shake_error));
                     return;
                 }
                 if(s.length() > 80) {
                     Toast.makeText(CommentActivity.this, "您的评论太长了，字数限制为80字符", Toast.LENGTH_SHORT ).show();
+                    ib_send.startAnimation(AnimationUtils.loadAnimation(CommentActivity.this, R.anim.shake_error));
                     return;
                 }
                 et_send.setText("");
@@ -237,74 +246,74 @@ public class CommentActivity extends AppCompatActivity {
         adapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(BaseQuickAdapter adapter, View view, final int position) {
-                if(myId == list.get(position).getCommenterId()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
-                    String[] strarr = {"复制评论到剪贴板","删除评论","取消"};
-                    builder.setItems(strarr, new DialogInterface.OnClickListener()
+            if(myId == list.get(position).getCommenterId()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
+                String[] strarr = {"复制评论到剪贴板","删除评论","取消"};
+                builder.setItems(strarr, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface arg0, int arg1)
                     {
-                        public void onClick(DialogInterface arg0, int arg1)
-                        {
-                            if (arg1 == 0) {
-                                String s = list.get(position).getContent();
-                                s = s + "\n著作权归作者所有。\n" +
-                                        "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
-                                        "作者：" +
-                                        list.get(position).getCommenter() +
-                                        "\n" +
-                                        "来源：Instagram";
-                                //获取剪贴板管理器：
-                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                // 创建普通字符型ClipData
-                                ClipData mClipData = ClipData.newPlainText("Label", s);
-                                // 将ClipData内容放到系统剪贴板里。
+                        if (arg1 == 0) {
+                            String s = list.get(position).getContent();
+                            s = s + "\n著作权归作者所有。\n" +
+                                    "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
+                                    "作者：" +
+                                    list.get(position).getCommenter() +
+                                    "\n" +
+                                    "来源：Instagram";
+                            //获取剪贴板管理器：
+                            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            // 创建普通字符型ClipData
+                            ClipData mClipData = ClipData.newPlainText("Label", s);
+                            // 将ClipData内容放到系统剪贴板里。
+                            cm.setPrimaryClip(mClipData);
+                            Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
+                        }else if(arg1 == 1){
+                            int temp = list.get(position).getId();
+                            deleteComment(temp);
+                        }
+                        else if(arg1 == 2) {
+                            return;
+                        }
+                    }
+                });
+                builder.show();
+            }
+            else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
+                String[] strarr = {"复制评论到剪贴板","取消"};
+                builder.setItems(strarr, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface arg0, int arg1)
+                    {
+                        if (arg1 == 0) {
+                            String s = list.get(position).getContent();
+                            s = s + "\n著作权归作者所有。\n" +
+                                    "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
+                                    "作者：" +
+                                    list.get(position).getCommenter() +
+                                    "\n" +
+                                    "来源：Instagram";
+                            //获取剪贴板管理器：
+                            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                            // 创建普通字符型ClipData
+                            ClipData mClipData = ClipData.newPlainText("Label", s);
+                            // 将ClipData内容放到系统剪贴板里。
+                            if (cm != null) {
                                 cm.setPrimaryClip(mClipData);
                                 Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
-                            }else if(arg1 == 1){
-                                int temp = list.get(position).getId();
-                                deleteComment(temp);
                             }
-                            else if(arg1 == 2) {
-                                return;
+                            else {
+                                Toast.makeText(CommentActivity.this, "内容为空", Toast.LENGTH_SHORT ).show();
                             }
+                        }else if(arg1 == 1){
+                            return;
                         }
-                    });
-                    builder.show();
-                }
-                else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this); //定义一个AlertDialog
-                    String[] strarr = {"复制评论到剪贴板","取消"};
-                    builder.setItems(strarr, new DialogInterface.OnClickListener()
-                    {
-                        public void onClick(DialogInterface arg0, int arg1)
-                        {
-                            if (arg1 == 0) {
-                                String s = list.get(position).getContent();
-                                s = s + "\n著作权归作者所有。\n" +
-                                        "商业转载请联系作者获得授权，非商业转载请注明出处。\n" +
-                                        "作者：" +
-                                        list.get(position).getCommenter() +
-                                        "\n" +
-                                        "来源：Instagram";
-                                //获取剪贴板管理器：
-                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                // 创建普通字符型ClipData
-                                ClipData mClipData = ClipData.newPlainText("Label", s);
-                                // 将ClipData内容放到系统剪贴板里。
-                                if (cm != null) {
-                                    cm.setPrimaryClip(mClipData);
-                                    Toast.makeText(CommentActivity.this, "内容已复制到剪贴板", Toast.LENGTH_SHORT ).show();
-                                }
-                                else {
-                                    Toast.makeText(CommentActivity.this, "内容为空", Toast.LENGTH_SHORT ).show();
-                                }
-                            }else if(arg1 == 1){
-                                return;
-                            }
-                        }
-                    });
-                    builder.show();
-                }
-                return true;
+                    }
+                });
+                builder.show();
+            }
+            return true;
             }
         });
         adapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
@@ -394,4 +403,5 @@ public class CommentActivity extends AppCompatActivity {
             }
         });
     }
+
 }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
         android:layout_height="50dp"
@@ -31,13 +32,15 @@
         android:layout_below="@+id/tb_detail"
         android:background="@drawable/toolbar">
     </View>
-    <!--<android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_detail"
+    <com.example.yang.ins.FunGameRefreshView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingRight="8dp"
-        android:paddingLeft="8dp"
-        android:fadingEdge="none">
-    </android.support.v7.widget.RecyclerView>-->
-    <include layout="@layout/item_dynamic" />
+        android:layout_height="wrap_content"
+        android:id="@+id/refreshview"
+        app:game_type="hit_block">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include layout="@layout/item_dynamic" />
+        </ScrollView>
+    </com.example.yang.ins.FunGameRefreshView>
 </LinearLayout>

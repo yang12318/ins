@@ -22,6 +22,7 @@
             android:textColor="#515151"
             android:textCursorDrawable="@drawable/edit_cursor3"
             android:background="@drawable/editshape2"
+            android:singleLine="true"
             android:drawableLeft="@drawable/search2"
             android:layout_height="50dp"
             android:id="@+id/et_search" />

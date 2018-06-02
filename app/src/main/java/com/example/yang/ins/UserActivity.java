@@ -240,6 +240,7 @@ public class UserActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!flag) {
                     //现在是没关注状态
+                    setButtonStyle(true);
                     Map<String, Object> map = new HashMap<>();
                     map.put("pk", userId);
                     HelloHttp.sendPostRequest("api/user/followyou", map, new okhttp3.Callback() {
@@ -262,12 +263,12 @@ public class UserActivity extends AppCompatActivity {
                                 result = new JSONObject(responseData).getString("status");
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                //setButtonStyle(true);
+                                setButtonStyle(false);
                             }
                             if(result != null && result.equals("Success")) {
                                 Looper.prepare();
-                                setButtonStyle(true);
-                                flag = true;
+//                                setButtonStyle(true);
+                                //flag = true;
                                 Toast.makeText(UserActivity.this, "关注成功", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
@@ -296,7 +297,7 @@ public class UserActivity extends AppCompatActivity {
                     //现在是关注状态
                     Map<String, Object> map = new HashMap<>();
                     map.put("pk", userId);
-                    setButtonStyle(true);
+                    setButtonStyle(false);
                     HelloHttp.sendDeleteRequest("api/user/followyou", map, new okhttp3.Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
@@ -321,13 +322,13 @@ public class UserActivity extends AppCompatActivity {
                             }
                             if(result != null && result.equals("Success")) {
                                 Looper.prepare();
-                                setButtonStyle(false);
-                                flag = false;
+                                //setButtonStyle(false);
+                                //flag = false;
                                 Toast.makeText(UserActivity.this, "已取消关注", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
-                                setButtonStyle(false);
+                                setButtonStyle(true);
                                 if(result != null && result.equals("UnknownError")) {
                                     Looper.prepare();
                                     Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
@@ -391,19 +392,21 @@ public class UserActivity extends AppCompatActivity {
         }
     };
 
-    private void setButtonStyle(final boolean flag) {
+    private void setButtonStyle(final boolean flag2) {
         runOnUiThread(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
-                if(flag) {
+                if(flag2) {
                     //这个人你关注了
+                    flag = true;
                     btn_follow.setText("关注中");
                     btn_follow.setTextColor(Color.BLACK);
                     //btn_follow.setBackground(getResources().getDrawable(R.drawable.buttonshape2));
                 }
                 else {
                     //这个人你没关注
+                    flag = false;
                     btn_follow.setText("关注");
                     btn_follow.setTextColor(Color.BLACK);
                     //btn_follow.setBackground(getResources().getDrawable(R.drawable.buttonshape3));

@@ -2,6 +2,8 @@ package com.example.yang.ins;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
@@ -13,8 +15,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -53,7 +57,10 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
     private CircleImageView ci_head;
     private TextView tv_username, tv_introduction, tv_review, tv_time;
     private TextSwitcher tv_like;
+    private FunGameRefreshView refreshView;
+    private int myId = -9;
     final Dynamic dynamic = new Dynamic();
+    private boolean flag = false;
     BGANinePhotoLayout ninePhotoLayout;
 
     @Override
@@ -65,6 +72,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         userId = intent.getIntExtra("user_id", -10);
         Log.d("DetailActivity", "postid="+Integer.toString(postId));
         Log.d("DetailActivity", "userid="+Integer.toString(userId));
+        refreshView = (FunGameRefreshView) findViewById(R.id.refreshview);
         ci_head = (CircleImageView) findViewById(R.id.ci_head);
         ib_back = (ImageButton) findViewById(R.id.ib_detail_back);
         ib_menu = (ImageButton) findViewById(R.id.ib_menu);
@@ -77,6 +85,28 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         tv_time = (TextView) findViewById(R.id.tv_time);
         tv_like = (TextSwitcher) findViewById(R.id.tv_like);
         ninePhotoLayout = (BGANinePhotoLayout) findViewById(R.id.npl_item_moment_photos);
+        MainApplication app = MainApplication.getInstance();
+        Map<String, Integer> mapParam = app.mInfoMap;
+        for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
+            if(item_map.getKey().equals("id")) {
+                myId = item_map.getValue();
+            }
+        }
+        if(myId == -9) {
+            Toast.makeText(DetailActivity.this, "全局内存中变量为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        refreshView.setOnRefreshListener(new FunGameRefreshView.FunGameRefreshListener() {
+            @Override
+            public void onPullRefreshing() {
+                initData();
+            }
+
+            @Override
+            public void onRefreshComplete() {
+
+            }
+        });
         ib_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,7 +116,59 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         ib_menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this); //定义一个AlertDialog
+                String[] strarr = {"删除动态","取消"};
+                builder.setItems(strarr, new DialogInterface.OnClickListener()
+                {
+                    public void onClick(DialogInterface arg0, int arg1)
+                    {
+                        if (arg1 == 0) {
+                            Map<String, Object> map = new HashMap<>();
+                            Map<String, Object> urlmap = new HashMap<>();
+                            urlmap.put("pk", postId);
+                            HelloHttp.sendSpecialDeleteRequest("api/dynamic", urlmap, map, new okhttp3.Callback() {
+                                @Override
+                                public void onFailure(Call call, IOException e) {
+                                    Log.e("DetailActivity", "FAILURE");
+                                    Looper.prepare();
+                                    Toast.makeText(DetailActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
 
+                                @Override
+                                public void onResponse(Call call, Response response) throws IOException {
+                                    String responseData = response.body().string();
+                                    Log.d("DetailActivity", responseData);
+                                    try{
+                                        JSONObject jsonObject = new JSONObject(responseData);
+                                        String result = jsonObject.getString("status");
+                                        if(result.equals("Success")) {
+                                            Looper.prepare();
+                                            Toast.makeText(DetailActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                            Looper.loop();
+                                        }
+                                        else if(result.equals("Failure")) {
+                                            Looper.prepare();
+                                            Toast.makeText(DetailActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+                                            Looper.loop();
+                                        }
+                                        else {
+                                            Looper.prepare();
+                                            Toast.makeText(DetailActivity.this, result, Toast.LENGTH_SHORT).show();
+                                            Looper.loop();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }else if(arg1 == 1){
+                            return;
+                        }
+                    }
+                });
+                builder.show();
             }
         });
         initData();             //向服务器请求数据
@@ -110,20 +192,8 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         ci_head.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int myId = -9;
                 if(userId == -10) {
                     Toast.makeText(DetailActivity.this, "Intent错误", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                MainApplication app = MainApplication.getInstance();
-                Map<String, Integer> mapParam = app.mInfoMap;
-                for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-                    if(item_map.getKey().equals("id")) {
-                        myId = item_map.getValue();
-                    }
-                }
-                if(myId == -9) {
-                    Toast.makeText(DetailActivity.this, "全局内存中变量为空", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(myId == userId) {
@@ -205,11 +275,15 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                 e.printStackTrace();
                             }
                             if(result.equals("Success")) {
-                                Looper.prepare();
-                                Toast.makeText(DetailActivity.this,"点赞成功", Toast.LENGTH_SHORT).show();
-                                dynamic.setIs_like(true);
-                                setLikeStyle(true);
-                                Looper.loop();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(DetailActivity.this,"点赞成功", Toast.LENGTH_SHORT).show();
+                                        TextSwitcher ts = (TextSwitcher) findViewById(R.id.tv_like);
+                                        dynamic.setLikes_num(dynamic.getLikes_num() + 1);
+                                        ts.setText(Integer.toString(dynamic.getLikes_num())+"次赞");
+                                    }
+                                });
                             }
                             else if(result.equals("Failure")) {
                                 Looper.prepare();
@@ -221,6 +295,12 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                 Looper.prepare();
                                 setLikeStyle(false);
                                 Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else {
+                                Looper.prepare();
+                                setLikeStyle(false);
+                                Toast.makeText(DetailActivity.this, result, Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                         }
@@ -251,11 +331,15 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                 e.printStackTrace();
                             }
                             if(result.equals("Success")) {
-                                Looper.prepare();
-                                dynamic.setIs_like(false);
-                                setLikeStyle(false);
-                                Toast.makeText(DetailActivity.this,"取消点赞成功", Toast.LENGTH_SHORT).show();
-                                Looper.loop();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(DetailActivity.this,"取消点赞成功", Toast.LENGTH_SHORT).show();
+                                        TextSwitcher ts = (TextSwitcher) findViewById(R.id.tv_like);
+                                        dynamic.setLikes_num(dynamic.getLikes_num() - 1);
+                                        ts.setText(Integer.toString(dynamic.getLikes_num())+"次赞");
+                                    }
+                                });
                             }
                             else if(result.equals("Failure")) {
                                 Looper.prepare();
@@ -267,6 +351,12 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                 Looper.prepare();
                                 setLikeStyle(true);
                                 Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            else {
+                                Looper.prepare();
+                                setLikeStyle(true);
+                                Toast.makeText(DetailActivity.this, result, Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                         }
@@ -309,8 +399,8 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    setCollectStyle(true);
-                                    dynamic.setIs_collect(true);
+                                    //setCollectStyle(true);
+                                    //dynamic.setIs_collect(true);
                                     Toast.makeText(DetailActivity.this,"收藏成功", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
@@ -324,6 +414,12 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                     Looper.prepare();
                                     setCollectStyle(false);
                                     Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                                else {
+                                    Looper.prepare();
+                                    setCollectStyle(false);
+                                    Toast.makeText(DetailActivity.this, result, Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                             }
@@ -360,21 +456,27 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    setCollectStyle(false);
-                                    dynamic.setIs_collect(false);
+                                    //setCollectStyle(false);
+                                    //dynamic.setIs_collect(false);
                                     Toast.makeText(DetailActivity.this,"取消收藏成功", Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
-//                                else if(result.equals("Failure")) {
-//                                    Looper.prepare();
-//                                    setCollectStyle(true);
-//                                    Toast.makeText(DetailActivity.this,"记录不存在", Toast.LENGTH_SHORT).show();
-//                                    Looper.loop();
-//                                }
+                                else if(result.equals("Failure")) {
+                                    Looper.prepare();
+                                    setCollectStyle(true);
+                                    Toast.makeText(DetailActivity.this,"记录不存在", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
                                 else if(result.equals("UnknownError")){
                                     Looper.prepare();
                                     setCollectStyle(true);
                                     Toast.makeText(DetailActivity.this,"未知错误", Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
+                                }
+                                else {
+                                    Looper.prepare();
+                                    setCollectStyle(true);
+                                    Toast.makeText(DetailActivity.this, result, Toast.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                             }
@@ -481,6 +583,14 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                     tv_introduction.setVisibility(View.VISIBLE);
                     tv_introduction.setText(dynamic.getIntroduction());
                 }
+                Log.d("DetailActivity", Integer.toString(myId));
+                Log.d("DetailActivity", Integer.toString(userId));
+                if(myId == userId) {
+                    ib_menu.setVisibility(View.VISIBLE);
+                }
+                else {
+                    ib_menu.setVisibility(View.GONE);
+                }
                 tv_like.setText(dynamic.getLikes_num()+"次赞");
                 tv_time.setText(dynamic.getPub_time());
                 tv_review.setText("查看全部"+dynamic.getCom_num()+"条评论");
@@ -556,6 +666,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
+                dynamic.setIs_like(flag);
                 ib_like.setImageResource(flag ? R.drawable.like2 : R.drawable.like1);
             }
         });
@@ -565,6 +676,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
+                dynamic.setIs_collect(flag);
                 ib_collect.setImageResource(flag ? R.drawable.collect2 : R.drawable.collect1);
             }
         });

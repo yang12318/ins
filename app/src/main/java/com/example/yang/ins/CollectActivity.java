@@ -71,7 +71,7 @@ public class CollectActivity extends AppCompatActivity {
         easyRefreshLayout.addEasyEvent(new EasyRefreshLayout.EasyEvent() {
             @Override
             public void onLoadMore() {
-
+                //没有上拉加载功能
             }
 
             @Override

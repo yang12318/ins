@@ -1,6 +1,7 @@
 package com.example.yang.ins;
 
 import android.Manifest;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -96,6 +97,8 @@ public class AddFragment extends Fragment implements EasyPermissions.PermissionC
                 Toast.makeText(getActivity(), "必须选择照片！", Toast.LENGTH_SHORT).show();
                 return;
             }
+            tv_publish.setEnabled(false);
+            tv_publish.setTextColor(Color.GRAY);
             //调用接口
             new Thread(new Runnable() {
                 @Override
@@ -132,10 +135,19 @@ public class AddFragment extends Fragment implements EasyPermissions.PermissionC
                         Response response;
                         OkHttpClient okHttpClient = new OkHttpClient();
                         OkHttpClient clientWith300sTimeout = okHttpClient.newBuilder().readTimeout(300, TimeUnit.SECONDS).build();
+
                         clientWith300sTimeout.newCall(request).enqueue(new Callback() {
                             @Override
                             public void onFailure(Call call, IOException e) {
                                 Log.e("AddFragment", "上传图片失败");
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                                        tv_publish.setEnabled(true);
+                                        tv_publish.setTextColor(Color.parseColor("#1296db"));
+                                    }
+                                });
                             }
                             @Override
                             public void onResponse(Call call, final Response response) throws IOException {
@@ -158,16 +170,17 @@ public class AddFragment extends Fragment implements EasyPermissions.PermissionC
                                     }
                                     else if(result.equals("UnknownError")) {
                                         Toast.makeText(getActivity(), "发布失败", Toast.LENGTH_SHORT).show();
+                                        tv_publish.setEnabled(true);
+                                        tv_publish.setTextColor(Color.parseColor("#1296db"));
                                     }
                                     Looper.loop();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    tv_publish.setEnabled(true);
+                                    tv_publish.setTextColor(Color.parseColor("#1296db"));
                                 }
                             }
                         });
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
                 }
             }).start();
         }

@@ -73,5 +73,5 @@
             android:src="@drawable/finish1"
             android:background="#1bb5eb"
             />
-</LinearLayout>
+    </LinearLayout>
 </LinearLayout>

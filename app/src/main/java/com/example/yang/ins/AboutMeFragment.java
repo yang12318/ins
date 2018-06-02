@@ -214,19 +214,7 @@ public class AboutMeFragment extends Fragment{
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, final int position) {
                 if (view.getId() == R.id.about_me_username || view.getId() == R.id.me_username || view.getId() == R.id.tv_me_username || view.getId() == R.id.about_me_head || view.getId() == R.id.me_head || view.getId() == R.id.ci_me_head) {
-                    int myId = -9;
                     int userId = mInfoList.get(position).getUserId();
-                    MainApplication app = MainApplication.getInstance();
-                    Map<String, Integer> mapParam = app.mInfoMap;
-                    for(Map.Entry<String, Integer> item_map:mapParam.entrySet()) {
-                        if(item_map.getKey().equals("id")) {
-                            myId = item_map.getValue();
-                        }
-                    }
-                    if(myId == -9) {
-                        Toast.makeText(getActivity(), "全局内存中变量为空", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
                     if(myId == userId) {
                         //这个人是我自己
                         Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -252,6 +240,7 @@ public class AboutMeFragment extends Fragment{
                     Map<String, Object> map = new HashMap<>();
                     map.put("pk", id);
                     if(flag) {
+                        //已点赞
                         changeStyle(false, position);
                         HelloHttp.sendDeleteRequest("api/user/followyou", map, new okhttp3.Callback() {
                             @Override
