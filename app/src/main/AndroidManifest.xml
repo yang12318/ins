@@ -17,8 +17,8 @@
         tools:replace="android:label">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,35 +26,49 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Register2Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ForgetActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Forget2Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ChangeCodeActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReviseActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ConcernActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".FollowActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UserActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CommentActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".LikeActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".DetailActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".CollectActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Register2Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ForgetActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Forget2Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ChangeCodeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ConcernActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FollowActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UserActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CommentActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LikeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CollectActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ChatClientActivity"></activity>
     </application>
 
 </manifest>
