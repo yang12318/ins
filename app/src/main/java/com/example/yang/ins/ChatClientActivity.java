@@ -1,8 +1,14 @@
 package com.example.yang.ins;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +49,7 @@ public class ChatClientActivity extends AppCompatActivity implements OnClickList
     private ScrollView svChat;
     private EditText etDetails;
     private EditText etMessage;
-    private ImageButton btnSend;
+    private ImageButton btnSend, back;
     private String address = "ws://ktchen.cn:8003/ws/chat/123/";
     private String username;
     private WebSocketClient client;// 连接客户端
@@ -55,10 +61,17 @@ public class ChatClientActivity extends AppCompatActivity implements OnClickList
         setContentView(R.layout.activity_chat_client);
         Intent intent = getIntent();
         username = intent.getStringExtra("username");
+        back =(ImageButton) findViewById(R.id.ib_chat_back);
         svChat = (ScrollView) findViewById(R.id.svChat);
         etDetails = (EditText) findViewById(R.id.etDetails);
         etMessage = (EditText) findViewById(R.id.etMessage);
         btnSend = (ImageButton) findViewById(R.id.btnSend);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         selectDraft = new DraftInfo("Draft_17", new Draft_17());
         try {
             client = new WebSocketClient(new URI(address), selectDraft.draft) {
@@ -67,7 +80,7 @@ public class ChatClientActivity extends AppCompatActivity implements OnClickList
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            etDetails.append("已经连接到服务器【" + getURI() + "】\n");
+                            etDetails.append("已经连接到服务器\n\n");
                             Log.e("wlf", "已经连接到服务器【" + getURI() + "】");
                             btnSend.setEnabled(true);
                         }
@@ -84,9 +97,12 @@ public class ChatClientActivity extends AppCompatActivity implements OnClickList
                         public void run() {
                             try {
                                 JSONObject jsonObject = new JSONObject(finalMessage);
-                                String content = jsonObject.getString("message");
                                 String name = jsonObject.getString("name");
-                                etDetails.append(name+":\t"+content+"\n");
+                                String content = name + ":\t\t" + jsonObject.getString("message") + "\n";
+                                SpannableString ss = new SpannableString(content);
+                                ss.setSpan(new StyleSpan(Typeface.BOLD), 0, name.length()+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2b5a83")), 0,name.length()+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                etDetails.append(ss);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
