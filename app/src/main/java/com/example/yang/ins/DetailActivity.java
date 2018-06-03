@@ -22,8 +22,11 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -577,7 +580,11 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                 }
                 else {
                     tv_introduction.setVisibility(View.VISIBLE);
-                    tv_introduction.setText(dynamic.getIntroduction());
+                    String s1 = dynamic.getUsername();
+                    String s2 = s1 + ":\t" + dynamic.getIntroduction();
+                    SpannableString ss = new SpannableString(s2);
+                    ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2b5a83")), 0,s1.length()+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    tv_introduction.setText(ss);
                 }
                 Log.d("DetailActivity", Integer.toString(myId));
                 Log.d("DetailActivity", Integer.toString(userId));
@@ -703,7 +710,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                     bounceAnimY.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            ib_like.setImageResource(R.drawable.like);
+                            ib_like.setImageResource(R.drawable.like1);
                         }
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -760,7 +767,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                     bounceAnimY.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            ib_collect.setImageResource(R.drawable.collect);
+                            ib_collect.setImageResource(R.drawable.collect1);
                         }
                         @Override
                         public void onAnimationEnd(Animator animation) {

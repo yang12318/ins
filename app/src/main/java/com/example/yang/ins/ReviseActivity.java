@@ -571,8 +571,8 @@ public class ReviseActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 filename = src;
                 RequestOptions requestOptions = new RequestOptions();
-                requestOptions.placeholder(R.drawable.n1);
-                requestOptions.error(R.drawable.n1);
+                requestOptions.placeholder(R.drawable.empty_like);
+                requestOptions.error(R.drawable.empty_like);
                 Glide.with(ReviseActivity.this)
                         .setDefaultRequestOptions(requestOptions)
                         .load(src).into(iv_head);

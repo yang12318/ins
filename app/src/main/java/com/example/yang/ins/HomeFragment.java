@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -284,7 +286,6 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, final int position) {
             if (view.getId() == R.id.tv_username || view.getId() == R.id.ci_head) {
-                int myId = -9;
                 int userId = list.get(position).getUserId();
                 if(myId == userId) {
                     //这个人是我自己
@@ -682,12 +683,9 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             else {
                 helper.setVisible(R.id.tv_detail, true);
                 String s1 = item.getUsername();
-                String s2 = s1 + item.getIntroduction();
-                Log.d("HomeFragment", s1);
-                Log.d("HomeFragment", s2);
+                String s2 = s1 + ":\t" + item.getIntroduction();
                 SpannableString ss = new SpannableString(s2);
-                ss.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, s1.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                //???????
+                ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2b5a83")), 0,s1.length()+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 helper.setText(R.id.tv_detail, ss);
             }
             helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
@@ -768,7 +766,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                     bounceAnimY.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            ib_like.setImageResource(R.drawable.like);
+                            ib_like.setImageResource(R.drawable.like1);
                         }
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -828,7 +826,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                     bounceAnimY.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            ib_collect.setImageResource(R.drawable.collect);
+                            ib_collect.setImageResource(R.drawable.collect1);
                         }
                         @Override
                         public void onAnimationEnd(Animator animation) {

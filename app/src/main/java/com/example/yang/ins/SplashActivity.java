@@ -2,8 +2,10 @@ package com.example.yang.ins;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.example.yang.ins.Utils.DateUtil;
@@ -16,6 +18,9 @@ public class SplashActivity extends AppCompatActivity {
     private TextView tv_start;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         int id = 0;
@@ -36,7 +41,6 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
         if(old_date == null || old_date.length() <= 0) {
-            tv_start.setText("欢迎使用！");
             mainIntent.setClass(SplashActivity.this, LoginActivity.class);
         }
         else if(DateUtil.getDeltaDate(old_date) <= 7) {

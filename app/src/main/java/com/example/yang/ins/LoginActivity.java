@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         btn_login = (Button) findViewById(R.id.btn_login);

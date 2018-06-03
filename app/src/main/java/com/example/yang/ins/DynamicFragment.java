@@ -7,6 +7,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -22,7 +23,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -604,7 +608,11 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
             }
             else {
                 helper.setVisible(R.id.tv_detail, true);
-                helper.setText(R.id.tv_detail, item.getIntroduction());
+                String s1 = item.getUsername();
+                String s2 = s1 + ":\t" + item.getIntroduction();
+                SpannableString ss = new SpannableString(s2);
+                ss.setSpan(new ForegroundColorSpan(Color.parseColor("#2b5a83")), 0,s1.length()+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                helper.setText(R.id.tv_detail, ss);
             }
             helper.setText(R.id.tv_comment, "查看全部"+item.getCom_num()+"条评论");
             helper.setText(R.id.tv_time, item.getPub_time());
@@ -684,7 +692,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                     bounceAnimY.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            ib_like.setImageResource(R.drawable.like);
+                            ib_like.setImageResource(R.drawable.like1);
                         }
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -744,7 +752,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                     bounceAnimY.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animation) {
-                            ib_collect.setImageResource(R.drawable.collect);
+                            ib_collect.setImageResource(R.drawable.collect1);
                         }
                         @Override
                         public void onAnimationEnd(Animator animation) {
