@@ -312,7 +312,7 @@ public class MeFragment extends Fragment {
                 tv_follow.setText(Integer.toString(follow_num));
                 tv_nickname.setText(nickname);
                 tv_username.setText(username);
-                if(introduction == null || introduction.equals("-")) {
+                if(introduction == null || introduction.equals("-") || introduction.equals("")) {
                     introduction = "这个人很懒，还没有填写个人简介";
                 }
                 tv_introduction.setText(introduction);

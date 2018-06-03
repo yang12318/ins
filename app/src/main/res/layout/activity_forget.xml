@@ -45,7 +45,7 @@
                 android:theme="@style/MyEditText"
                 android:drawableLeft="@drawable/email"
                 android:singleLine="true"
-                android:textColor="#5000"
+                android:textColor="#000"
                 android:textSize="15sp" />
 
     </RelativeLayout>

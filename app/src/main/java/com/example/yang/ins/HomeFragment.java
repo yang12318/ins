@@ -16,6 +16,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -179,7 +180,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             }
                             else if(result.equals("null")){
                                 Looper.prepare();
-                                Toast.makeText(getContext(), "没有更多数据了", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "没有更多数据了", Toast.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
@@ -267,7 +268,9 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             list.add(dynamic);
                             mHandler.sendEmptyMessageDelayed(1, 0);
                         }
-                        last_post_id = list.get(list.size()-1).getId();
+                        if (list.size() != 0) {
+                            last_post_id = list.get(list.size()-1).getId();
+                        }
                     }
                     else {
                         Looper.prepare();
@@ -319,7 +322,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             Log.e("Detail", "FAILURE");
                             Looper.prepare();
                             setLikeStyle(false,position);
-                            Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(getView(),"服务器未响应",Snackbar.LENGTH_SHORT).show();
                             Looper.loop();
                         }
 
@@ -336,8 +339,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             }
                             if(result.equals("Success")) {
                                 Looper.prepare();
-                                Toast.makeText(getActivity(),"点赞成功", Toast.LENGTH_SHORT).show();
-                                //list.get(position).setIs_like(true);
+                                Snackbar.make(getView(),"点赞成功",Snackbar.LENGTH_SHORT).show();
                                 list.get(position).setLikes_num(list.get(position).getLikes_num()+1);
                                 addLikeNum(position);
                                 //setLikeStyle(true,position);
@@ -346,13 +348,13 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             else if(result.equals("Failure")) {
                                 Looper.prepare();
                                 setLikeStyle(false,position);
-                                Toast.makeText(getActivity(),"记录已存在", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(getView(),"记录已存在",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("UnknownError")){
                                 Looper.prepare();
                                 setLikeStyle(false,position);
-                                Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(getView(),"未知错误",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
@@ -373,7 +375,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             Log.e("Detail", "FAILURE");
                             Looper.prepare();
                             setLikeStyle(true,position);
-                            Toast.makeText(getActivity(), "服务器未响应", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(getView(),"服务器未响应",Snackbar.LENGTH_SHORT).show();
                             Looper.loop();
                         }
 
@@ -394,19 +396,19 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                                 //setLikeStyle(false,position);
                                 list.get(position).setLikes_num(list.get(position).getLikes_num()-1);
                                 addLikeNum(position);
-                                Toast.makeText(getActivity(),"取消点赞成功", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(getView(),"取消点赞",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("Failure")) {
                                 Looper.prepare();
                                 setLikeStyle(true,position);
-                                Toast.makeText(getActivity(),"记录不存在", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(getView(),"记录不存在",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("UnknownError")){
                                 Looper.prepare();
                                 setLikeStyle(true,position);
-                                Toast.makeText(getActivity(),"未知错误", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(getView(),"未知错误",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
@@ -452,9 +454,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    //setCollectStyle(true,position);
-                                    //list.get(position).setIs_collect(true);
-                                    Toast.makeText(getActivity(),"收藏成功", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(getView(),"收藏成功",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {
@@ -509,7 +509,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    Toast.makeText(getActivity(),"取消收藏成功", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(getView(),"取消收藏成功",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {
@@ -564,7 +564,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                                     String result = jsonObject.getString("status");
                                     if(result.equals("Success")) {
                                         Looper.prepare();
-                                        Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(getView(),"删除成功",Snackbar.LENGTH_SHORT).show();
                                         initData();
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
@@ -576,7 +576,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                                     }
                                     else if(result.equals("Failure")) {
                                         Looper.prepare();
-                                        Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(getView(),"删除失败",Snackbar.LENGTH_SHORT).show();
                                         Looper.loop();
                                     }
                                     else {

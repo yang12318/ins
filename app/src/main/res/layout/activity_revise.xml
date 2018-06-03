@@ -69,23 +69,6 @@
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
-                android:id="@+id/revise_nickname"
-                android:maxLength="15"
-                android:gravity="center_vertical"
-                android:textColorHint="#939292"
-                android:textColor="#000"
-                android:singleLine="true"
-                android:drawablePadding="8dp"
-                android:theme="@style/MyEditText"
-                android:textCursorDrawable="@drawable/edit_cursor2"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:drawableLeft="@drawable/nickname"
-                android:hint="昵称"
-                android:textSize="14sp"/>
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
                 android:id="@+id/revise_username"
                 android:maxLength="15"
                 android:editable="false"
@@ -101,6 +84,23 @@
                 android:layout_marginRight="5dp"
                 android:textSize="14sp"
                 android:drawableLeft="@drawable/username"/>
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:id="@+id/revise_nickname"
+                android:maxLength="15"
+                android:gravity="center_vertical"
+                android:textColorHint="#939292"
+                android:textColor="#000"
+                android:singleLine="true"
+                android:drawablePadding="8dp"
+                android:theme="@style/MyEditText"
+                android:textCursorDrawable="@drawable/edit_cursor2"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:drawableLeft="@drawable/nickname"
+                android:hint="昵称"
+                android:textSize="14sp"/>
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

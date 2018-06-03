@@ -1,6 +1,7 @@
 package com.example.yang.ins;
 
 import android.annotation.SuppressLint;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -237,7 +238,7 @@ public class UserActivity extends AppCompatActivity {
         });
         btn_follow.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
             if(!flag) {
                 //现在是没关注状态
                 setButtonStyle(true);
@@ -267,21 +268,19 @@ public class UserActivity extends AppCompatActivity {
                         }
                         if(result != null && result.equals("Success")) {
                             Looper.prepare();
-//                                setButtonStyle(true);
-                            //flag = true;
-                            Toast.makeText(UserActivity.this, "关注成功", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(v,"关注成功",Snackbar.LENGTH_SHORT).show();
                             Looper.loop();
                         }
                         else {
                             setButtonStyle(false);
                             if(result != null && result.equals("UnknownError")) {
                                 Looper.prepare();
-                                Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(v,"未知错误",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result != null && result.equals("Failure")) {
                                 Looper.prepare();
-                                Toast.makeText(UserActivity.this, "错误：重复的关注请求，已取消关注", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(v,"错误：重复的关注请求，已取消关注",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
@@ -304,7 +303,7 @@ public class UserActivity extends AppCompatActivity {
                         Log.e("UserActivity", "FAILURE");
                         setButtonStyle(true);
                         Looper.prepare();
-                        Toast.makeText(UserActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(v,"服务器错误",Snackbar.LENGTH_SHORT).show();
                         Looper.loop();
                     }
 
@@ -322,16 +321,14 @@ public class UserActivity extends AppCompatActivity {
                         }
                         if(result != null && result.equals("Success")) {
                             Looper.prepare();
-                            //setButtonStyle(false);
-                            //flag = false;
-                            Toast.makeText(UserActivity.this, "已取消关注", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(v,"已取消关注",Snackbar.LENGTH_SHORT).show();
                             Looper.loop();
                         }
                         else {
                             setButtonStyle(true);
                             if(result != null && result.equals("UnknownError")) {
                                 Looper.prepare();
-                                Toast.makeText(UserActivity.this, "未知错误", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(v,"未知错误",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
@@ -402,14 +399,12 @@ public class UserActivity extends AppCompatActivity {
                     flag = true;
                     btn_follow.setText("关注中");
                     btn_follow.setTextColor(Color.BLACK);
-                    //btn_follow.setBackground(getResources().getDrawable(R.drawable.buttonshape2));
                 }
                 else {
                     //这个人你没关注
                     flag = false;
                     btn_follow.setText("关注");
                     btn_follow.setTextColor(Color.BLACK);
-                    //btn_follow.setBackground(getResources().getDrawable(R.drawable.buttonshape3));
                 }
             }
         });

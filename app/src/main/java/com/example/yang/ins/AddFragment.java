@@ -2,6 +2,7 @@ package com.example.yang.ins;
 
 import android.Manifest;
 import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -94,7 +95,7 @@ public class AddFragment extends Fragment implements EasyPermissions.PermissionC
         if(view.getId() == R.id.tv_publish) {
             final String content = et_add.getText().toString().trim();
             if(mPhotosSnpl.getItemCount() == 0) {
-                Toast.makeText(getActivity(), "必须选择照片！", Toast.LENGTH_SHORT).show();
+                Snackbar.make(getView(),"必须选择照片",Snackbar.LENGTH_SHORT).show();
                 return;
             }
             tv_publish.setEnabled(false);

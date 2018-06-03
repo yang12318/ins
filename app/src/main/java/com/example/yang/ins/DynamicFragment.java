@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -260,8 +261,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                             }
                             if(result.equals("Success")) {
                                 Looper.prepare();
-                                Toast.makeText(getActivity(),"点赞成功", Toast.LENGTH_SHORT).show();
-                                //list.get(position).setIs_like(true);
+                                Snackbar.make(getView(),"点赞成功",Snackbar.LENGTH_SHORT).show();
                                 list.get(position).setLikes_num(list.get(position).getLikes_num()+1);
                                 addLikeNum(position);
                                 //setLikeStyle(true,position);
@@ -318,7 +318,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                 //setLikeStyle(false,position);
                                 list.get(position).setLikes_num(list.get(position).getLikes_num()-1);
                                 addLikeNum(position);
-                                Toast.makeText(getActivity(),"取消点赞成功", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(getView(),"取消点赞成功",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else if(result.equals("Failure")) {
@@ -376,9 +376,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    //setCollectStyle(true,position);
-                                    //list.get(position).setIs_collect(true);
-                                    Toast.makeText(getActivity(),"收藏成功", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(getView(),"收藏成功",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {
@@ -435,7 +433,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                     Looper.prepare();
                                     //setCollectStyle(false,position);
                                     //list.get(position).setIs_collect(false);
-                                    Toast.makeText(getActivity(),"取消收藏成功", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(getView(),"取消收藏成功",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
 //                                else if(result.equals("Failure")) {
@@ -490,7 +488,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                     String result = jsonObject.getString("status");
                                     if(result.equals("Success")) {
                                         Looper.prepare();
-                                        Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(getView(),"删除成功",Snackbar.LENGTH_SHORT).show();
                                         initData();
                                         getActivity().runOnUiThread(new Runnable() {
                                             @Override
@@ -502,7 +500,7 @@ public class DynamicFragment extends Fragment implements EasyPermissions.Permiss
                                     }
                                     else if(result.equals("Failure")) {
                                         Looper.prepare();
-                                        Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(getView(),"删除失败",Snackbar.LENGTH_SHORT).show();
                                         Looper.loop();
                                     }
                                     else {

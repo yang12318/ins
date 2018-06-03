@@ -53,6 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.bingoogolapple.baseadapter.BGABaseAdapterUtil;
 import cn.bingoogolapple.photopicker.imageloader.BGAImage;
@@ -348,29 +350,23 @@ public class ReviseActivity extends AppCompatActivity implements View.OnClickLis
         }
         else if(view.getId() == R.id.ib_revise_finish) {
             //调用接口
-            final String nickname = et_nickname.getText().toString();
+            final String nickname = et_nickname.getText().toString().trim();
             if(nickname.length() <= 0 || nickname == null) {
-                showToast("您的昵称未填写");
+                showToast("您未填写有效昵称");
                 return;
             }
             if(nickname.length() < 3 || nickname.length() > 15) {
                 showToast("昵称长度应为3-15");
                 return;
             }
-            final String username = et_username.getText().toString();
-            if (username.length() <= 0 || username == null) {
-                showToast("未填写全名");
-                return;
-            }
-            if (username.length() < 2 || username.length() > 15) {
-                showToast("全名格式不合法，长度应为2-15");
-                return;
-            }
-            final String introduction = et_bio.getText().toString();
+            final String introduction = et_bio.getText().toString().trim();
             if (introduction.length() > 100) {
                 showToast("您的个人简介过长，长度限制为0-100");
                 return;
             }
+            Pattern p = Pattern.compile("(\r?\n(\\s*\r?\n)+)");
+            Matcher m = p.matcher(introduction);
+            final String introduction2 = m.replaceAll("\r\n");
             final String birthday = tv_birth.getText().toString();
             final String location = tv_location.getText().toString();
             final String gender = tv_gender.getText().toString();
@@ -404,7 +400,7 @@ public class ReviseActivity extends AppCompatActivity implements View.OnClickLis
                     multipartBodyBuilder.setType(MultipartBody.FORM);
                     multipartBodyBuilder.addFormDataPart("nickname", nickname);
                     multipartBodyBuilder.addFormDataPart("address", location);
-                    multipartBodyBuilder.addFormDataPart("introduction", introduction);
+                    multipartBodyBuilder.addFormDataPart("introduction", introduction2);
                     multipartBodyBuilder.addFormDataPart("gender", Integer.toString(finalSex));
                     multipartBodyBuilder.addFormDataPart("birthday", birthday);
                     if(flag) {
@@ -554,7 +550,7 @@ public class ReviseActivity extends AppCompatActivity implements View.OnClickLis
             {
                 et_nickname.setText(nickname);
                 et_username.setText(username);
-                if(introduction == null || introduction.equals("-")) {
+                if(introduction == null || introduction.equals("-") || introduction.equals("")) {
                     introduction = "这个人很懒，还没有填写个人简介";
                 }
                 et_bio.setText(introduction);

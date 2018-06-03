@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class ForgetActivity extends AppCompatActivity {
+public class ForgetActivity extends AppCompatActivity implements TextWatcher{
 
     private ImageButton ib_back,ib_go;
     private EditText et_email;
@@ -44,7 +44,7 @@ public class ForgetActivity extends AppCompatActivity {
         Drawable db_email=getResources().getDrawable(R.drawable.email);
         db_email.setBounds(0,0,85,85);
         et_email.setCompoundDrawables(db_email,null,null,null);
-        //et_email.addTextChangedListener(new JumpTextWatcher(et_email, et_code));
+        et_email.addTextChangedListener(this);
         ib_go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,46 +106,22 @@ public class ForgetActivity extends AppCompatActivity {
         });
 
     }
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        ib_go.setImageResource(R.drawable.go1);//在这里重复设置，以保证清除任意EditText中的内容，按钮重新变回不可点击状态
+    }
 
-    /*private class JumpTextWatcher implements TextWatcher {
-        private EditText mThisView = null;
-        private View mNextView = null;
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-        public JumpTextWatcher(EditText vThis, View vNext) {
-            super();
-            mThisView = vThis;
-            if(vNext != null) {
-                mNextView = vNext;
-            }
-        }
+    }
 
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            String str = s.toString();
-            if(str.indexOf("\r") >= 0 || str.indexOf("\n") >= 0) {      //发现输入回车或换行
-                mThisView.setText(str.replace("\r", "").replace("\n", ""));
-                if(mNextView != null) {
-                    mNextView.requestFocus();
-                    if(mNextView instanceof EditText) {         //让光标自动移动到编辑框的文本末尾
-                        EditText et = (EditText) mNextView;
-                        et.setSelection(et.getText().length());
-                    }
-                }
-            }
-
+    @Override
+    public void afterTextChanged(Editable s) {
+        if (!(et_email.getText().toString().equals(""))){
+            ib_go.setImageResource(R.drawable.go2);
         }
     }
-    */
     private void showToast(String s) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
@@ -162,5 +138,6 @@ public class ForgetActivity extends AppCompatActivity {
         }
         return flag;
     }
+
 }
 

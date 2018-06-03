@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -291,7 +292,7 @@ public class SearchFragment extends Fragment {
                             Log.e("FollowActivity", "FAILURE");
                             changeStyle(true, position);
                             Looper.prepare();
-                            Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(view,"服务器错误",Snackbar.LENGTH_SHORT).show();
                             Looper.loop();
                         }
 
@@ -310,14 +311,14 @@ public class SearchFragment extends Fragment {
                             }
                             if(result.equals("Success")) {
                                 Looper.prepare();
-                                Toast.makeText(getContext(), "已取消关注", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(view,"已取消关注",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
                                 changeStyle(true, position);
                                 if(result.equals("UnknownError")) {
                                     Looper.prepare();
-                                    Toast.makeText(getContext(), "未知错误", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(view,"未知错误",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else {
@@ -338,7 +339,7 @@ public class SearchFragment extends Fragment {
                             Log.e("FollowActivity", "FAILURE");
                             changeStyle(false, position);
                             Looper.prepare();
-                            Toast.makeText(getContext(), "服务器错误", Toast.LENGTH_SHORT).show();
+                            Snackbar.make(view,"服务器错误",Snackbar.LENGTH_SHORT).show();
                             Looper.loop();
                         }
 
@@ -357,19 +358,19 @@ public class SearchFragment extends Fragment {
                             }
                             if(result != null && result.equals("Success")) {
                                 Looper.prepare();
-                                Toast.makeText(getContext(), "关注成功", Toast.LENGTH_SHORT).show();
+                                Snackbar.make(view,"关注成功",Snackbar.LENGTH_SHORT).show();
                                 Looper.loop();
                             }
                             else {
                                 changeStyle(false, position);
                                 if(result.equals("UnknownError")) {
                                     Looper.prepare();
-                                    Toast.makeText(getContext(), "未知错误", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(view,"未知错误",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {
                                     Looper.prepare();
-                                    Toast.makeText(getContext(), "错误：重复的关注请求，已取消关注", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(view,"错误：重复的关注请求，已取消关注",Snackbar.LENGTH_SHORT).show();
                                     RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(position);
                                     Looper.loop();
                                 }
@@ -443,5 +444,9 @@ public class SearchFragment extends Fragment {
         });
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        et_search.setText("");
+    }
 }

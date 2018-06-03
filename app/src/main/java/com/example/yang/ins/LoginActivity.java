@@ -59,8 +59,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         tv_register = (TextView) findViewById(R.id.tv_register);
         et_password = (EditText) findViewById(R.id.et_passwordInput);
         et_user = (EditText) findViewById(R.id.et_usernameInput);
-        et_user.setText("17852413080@163.com");
-        et_password.setText("12345678");
         et_user.addTextChangedListener(this);
         et_password.addTextChangedListener(this);
         et_user.addTextChangedListener(new JumpTextWatcher(et_user, et_password));

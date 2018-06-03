@@ -19,6 +19,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -130,7 +131,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         });
         ib_menu.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(DetailActivity.this); //定义一个AlertDialog
                 String[] strarr = {"删除动态","取消"};
                 builder.setItems(strarr, new DialogInterface.OnClickListener()
@@ -159,13 +160,13 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                         String result = jsonObject.getString("status");
                                         if(result.equals("Success")) {
                                             Looper.prepare();
-                                            Toast.makeText(DetailActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
+                                            Snackbar.make(view,"删除成功",Snackbar.LENGTH_SHORT).show();
                                             finish();
                                             Looper.loop();
                                         }
                                         else if(result.equals("Failure")) {
                                             Looper.prepare();
-                                            Toast.makeText(DetailActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+                                            Snackbar.make(view,"删除失败",Snackbar.LENGTH_SHORT).show();
                                             Looper.loop();
                                         }
                                         else {
@@ -244,7 +245,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         });
         ib_like.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 int pk = dynamic.getId();
                 final boolean flag = dynamic.isIs_like();
                 Map<String, Object> map = new HashMap<>();
@@ -277,7 +278,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(DetailActivity.this,"点赞成功", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(view,"点赞成功",Snackbar.LENGTH_SHORT).show();
                                         TextSwitcher ts = (TextSwitcher) findViewById(R.id.tv_like);
                                         dynamic.setLikes_num(dynamic.getLikes_num() + 1);
                                         ts.setText(Integer.toString(dynamic.getLikes_num())+"次赞");
@@ -333,7 +334,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(DetailActivity.this,"取消点赞成功", Toast.LENGTH_SHORT).show();
+                                        Snackbar.make(view,"取消点赞成功",Snackbar.LENGTH_SHORT).show();
                                         TextSwitcher ts = (TextSwitcher) findViewById(R.id.tv_like);
                                         dynamic.setLikes_num(dynamic.getLikes_num() - 1);
                                         ts.setText(Integer.toString(dynamic.getLikes_num())+"次赞");
@@ -365,7 +366,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
         });
         ib_collect.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 boolean flag = dynamic.isIs_collect();
                 if(!flag){
                     //未收藏
@@ -398,9 +399,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    //setCollectStyle(true);
-                                    //dynamic.setIs_collect(true);
-                                    Toast.makeText(DetailActivity.this,"收藏成功", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(view,"收藏成功",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {
@@ -455,9 +454,7 @@ public class DetailActivity extends AppCompatActivity implements EasyPermissions
                             if (result != null) {
                                 if(result.equals("Success")) {
                                     Looper.prepare();
-                                    //setCollectStyle(false);
-                                    //dynamic.setIs_collect(false);
-                                    Toast.makeText(DetailActivity.this,"取消收藏成功", Toast.LENGTH_SHORT).show();
+                                    Snackbar.make(view,"取消收藏成功",Snackbar.LENGTH_SHORT).show();
                                     Looper.loop();
                                 }
                                 else if(result.equals("Failure")) {

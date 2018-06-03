@@ -20,7 +20,7 @@
 
     <!-- FunGameView -->
     <declare-styleable name="FunGame">
-        <attr name="left_model_color" format="color" />
+        <attr name="left_model_color" format="color"/>
         <attr name="middle_model_color" format="color" />
         <attr name="right_model_color" format="color" />
     </declare-styleable>
