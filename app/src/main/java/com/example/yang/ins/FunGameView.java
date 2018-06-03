@@ -59,9 +59,9 @@ abstract class FunGameView extends View {
         super(context, attrs, defStyleAttr);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FunGame);
-        lModelColor = typedArray.getColor(R.styleable.FunGame_left_model_color, Color.parseColor("#515151"));
+        lModelColor = typedArray.getColor(R.styleable.FunGame_left_model_color, Color.parseColor("#4682B4"));
         mModelColor = typedArray.getColor(R.styleable.FunGame_middle_model_color, Color.BLACK);
-        rModelColor = typedArray.getColor(R.styleable.FunGame_right_model_color, Color.parseColor("#939292"));
+        rModelColor = typedArray.getColor(R.styleable.FunGame_right_model_color, Color.parseColor("#4682B4"));
         typedArray.recycle();
 
         initBaseTools();

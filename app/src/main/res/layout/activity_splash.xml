@@ -18,7 +18,7 @@
         android:layout_gravity="center"
         android:layout_centerInParent="true"
         android:id="@+id/tv_splash"
-        android:layout_marginTop="220dp"
+
         android:layout_width="wrap_content"
         android:text="Instagram"
         android:textColor="@android:color/white"
