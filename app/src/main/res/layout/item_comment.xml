@@ -39,7 +39,7 @@
             android:layout_toRightOf="@+id/comment_head"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="4dp"
             android:text="内容"
             android:textSize="15sp" />
 
